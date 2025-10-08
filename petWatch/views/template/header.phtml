@@ -31,10 +31,33 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="../index.php">Home</a></li>
-                    <li><a href="#">Browse Pets</a></li>
-                    <li><a href="#">Search</a></li>
-                    <li><a href="#">Login</a></li>
+                    <li><a href="../index.php">Home</a></li>
+
+                    <?php
+                    // Check if user is logged in
+                    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true):
+                        ?>
+                        <!-- Links for logged in users -->
+                        <li><a href="#"">Browse Pets</a></li>
+                        <li><a href="#">Search Database</a></li>
+                        <li><a href="#">Manage Pets</a></li>
+                    <?php else: ?>
+                        <!-- Links for non-logged in users -->
+                        <li><a href="#">Browse Pets</a></li>
+                        <li><a href="#">Search Database</a></li>
+                    <?php endif; ?>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <?php
+                    // Check if user is logged in
+                    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true):
+                        ?>
+                        <li class="hidden-xs"><a href="#" style="color: black; font-weight: bold;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></a></li>
+                        <li class="visible-xs-block text-center" style="display: none;"><a href="#" style="color: black; font-weight: bold;"><?php echo htmlspecialchars($_SESSION['username']); ?></a></li>
+                        <li><a href="../controllers/logout.php" onclick="return confirmLogout()">Log Out</a></li>
+                    <?php else: ?>
+                        <li><a href="../controllers/login.php">Login</a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -43,3 +66,10 @@
 
 <!-- Main content container -->
 <div class="container main-content">
+
+    <!-- Simple JavaScript for logout confirmation -->
+    <script>
+        function confirmLogout() {
+            return confirm("Are you sure you want to log out?");
+        }
+    </script>

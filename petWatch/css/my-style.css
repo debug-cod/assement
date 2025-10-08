@@ -106,6 +106,40 @@ body {
     display: inline-block;
 }
 
+/* Login page styles - HANDWRITTEN */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    border: 2px solid #000000;
+    border-radius: 0;
+}
+
+.form-control:focus {
+    border-color: #ff0000;
+    box-shadow: none;
+}
+
+.alert-danger {
+    background-color: #ff0000;
+    color: #ffffff;
+    border: none;
+    border-radius: 0;
+}
+
+.text-muted {
+    color: #666666 !important;
+    font-size: 12px;
+}
+
+
 /* Mobile styles for navigation */
 @media (max-width: 768px) {
     .navbar-header {
@@ -156,14 +190,46 @@ body {
     }
 }
 
-/* Extra small devices */
-@media (max-width: 480px) {
-    .jumbotron h1 {
-        font-size: 24px;
+/* Mobile styles for login */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 10px;
     }
 
-    .btn-lg {
+    .navbar-right .hidden-xs {
+        display: none !important;
+    }
+
+    .navbar-right .visible-xs-block {
+        display: block !important;
+    }
+
+    .nav.navbar-nav.navbar-right {
+        float: none !important;
+        text-align: center;
+    }
+}
+
+
+
+/* Make sure Manage Pets is visible on mobile */
+.navbar-nav li a {
+    text-align: center;
+}
+
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .navbar-brand {
+        padding: 5px 15px;
+    }
+
+    .navbar-brand img {
+        height: 35px;
+    }
+
+    .navbar-nav > li > a {
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 8px 15px;
     }
 }
