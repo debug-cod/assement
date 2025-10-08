@@ -63,7 +63,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: red;
+    color: red;
     border-color: red;
 }
 
@@ -73,8 +73,7 @@ body {
 }
 
 .btn-default:hover {
-    background-color: black;
-    color: white;
+    color: red;
 }
 
 /* Footer styles - stick to bottom */
