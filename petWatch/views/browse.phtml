@@ -1,20 +1,22 @@
-<?php global $search, $species, $sort, $color, $sightings, $age, $gender, $reward, $page, $totalPages;
-include 'template/header.phtml'; ?>
+<?php global $search, $species, $sort, $color, $sightings, $age, $gender, $reward, $page, $totalPages; ?>
+<?php include 'template/header.phtml'; ?>
 
     <div class="container">
         <div class="row">
-            <!-- 搜索区域优化 -->
-            <div class="col-md-12">
+            <!-- 搜索区域 -->
+            <div class="col-xs-12">
                 <div class="well search-well text-center">
                     <form method="get" action="browse.php" class="form-inline">
-                        <div class="form-group">
-                            <input type="text" name="search" class="form-control no-zoom"
-                                   placeholder=" Search pets by name, species, breed..."
+                        <div class="form-group col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                            <input type="text" name="search" class="form-control"
+                                   placeholder="Search pets by name, species, breed..."
                                    value="<?php echo htmlspecialchars($search); ?>">
                         </div>
-                        <button type="submit" class="btn btn-success touch-friendly">Search</button>
+                        <div class="form-group col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <button type="submit" class="btn btn-success btn-block">Search</button>
+                        </div>
                     </form>
-                    <p class="text-muted">
+                    <p class="text-muted hidden-xs">
                         This page is for preview only. Please login to modify or delete records.
                     </p>
                 </div>
@@ -22,62 +24,65 @@ include 'template/header.phtml'; ?>
         </div>
 
         <div class="row">
-            <!-- 筛选面板优化 -->
-            <div class="col-md-3">
+            <!-- 筛选面板 - 使用Bootstrap栅格系统 -->
+            <div class="col-xs-12 col-md-3 col-lg-2">
                 <div class="panel panel-default filter-panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             Filters
-                            <button type="button" class="filter-toggle">☰</button>
+                            <button type="button" class="btn btn-xs btn-default visible-xs-inline hidden-md hidden-lg hidden-xl"
+                                    data-toggle="collapse" data-target="#filterCollapse">
+                                ☰
+                            </button>
                         </h4>
                     </div>
-                    <div class="panel-body">
+                    <div id="filterCollapse" class="panel-body collapse in">
                         <form method="get" action="browse.php" id="filterForm">
                             <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
 
                             <!-- Species Filter -->
                             <div class="form-group">
                                 <label>Species:</label>
-                                <select name="species" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="species" class="form-control" onchange="this.form.submit()">
                                     <option value="">All Species</option>
-                                    <option value="Cat" <?php echo $species == 'Cat' ? 'selected' : ''; ?>> Cat</option>
-                                    <option value="Dog" <?php echo $species == 'Dog' ? 'selected' : ''; ?>> Dog</option>
-                                    <option value="Bird" <?php echo $species == 'Bird' ? 'selected' : ''; ?>> Bird</option>
-                                    <option value="Rabbit" <?php echo $species == 'Rabbit' ? 'selected' : ''; ?>> Rabbit</option>
-                                    <option value="Hamster" <?php echo $species == 'Hamster' ? 'selected' : ''; ?>> Hamster</option>
-                                    <option value="Other" <?php echo $species == 'Other' ? 'selected' : ''; ?>> Other</option>
+                                    <option value="Cat" <?php echo $species == 'Cat' ? 'selected' : ''; ?>>Cat</option>
+                                    <option value="Dog" <?php echo $species == 'Dog' ? 'selected' : ''; ?>>Dog</option>
+                                    <option value="Bird" <?php echo $species == 'Bird' ? 'selected' : ''; ?>>Bird</option>
+                                    <option value="Rabbit" <?php echo $species == 'Rabbit' ? 'selected' : ''; ?>>Rabbit</option>
+                                    <option value="Hamster" <?php echo $species == 'Hamster' ? 'selected' : ''; ?>>Hamster</option>
+                                    <option value="Other" <?php echo $species == 'Other' ? 'selected' : ''; ?>>Other</option>
                                 </select>
                             </div>
 
                             <!-- Sort Filter -->
                             <div class="form-group">
                                 <label>Sort by Date:</label>
-                                <select name="sort" class="form-control no-zoom" onchange="this.form.submit()">
-                                    <option value="late" <?php echo $sort == 'late' ? 'selected' : ''; ?>> Latest First</option>
-                                    <option value="early" <?php echo $sort == 'early' ? 'selected' : ''; ?>> Earliest First</option>
+                                <select name="sort" class="form-control" onchange="this.form.submit()">
+                                    <option value="late" <?php echo $sort == 'late' ? 'selected' : ''; ?>>Latest First</option>
+                                    <option value="early" <?php echo $sort == 'early' ? 'selected' : ''; ?>>Earliest First</option>
                                 </select>
                             </div>
 
                             <!-- Color Filter -->
                             <div class="form-group">
                                 <label>Color:</label>
-                                <select name="color" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="color" class="form-control" onchange="this.form.submit()">
                                     <option value="">All Colors</option>
-                                    <option value="White" <?php echo $color == 'White' ? 'selected' : ''; ?>> White</option>
-                                    <option value="Black" <?php echo $color == 'Black' ? 'selected' : ''; ?>> Black</option>
-                                    <option value="Red" <?php echo $color == 'Red' ? 'selected' : ''; ?>> Red</option>
-                                    <option value="Purple" <?php echo $color == 'Purple' ? 'selected' : ''; ?>> Purple</option>
-                                    <option value="Multi-color" <?php echo $color == 'Multi-color' ? 'selected' : ''; ?>> Multi-color</option>
-                                    <option value="Grey" <?php echo $color == 'Grey' ? 'selected' : ''; ?>> Grey</option>
-                                    <option value="Yellow" <?php echo $color == 'Yellow' ? 'selected' : ''; ?>> Yellow</option>
-                                    <option value="Other" <?php echo $color == 'Other' ? 'selected' : ''; ?>> Other</option>
+                                    <option value="White" <?php echo $color == 'White' ? 'selected' : ''; ?>>White</option>
+                                    <option value="Black" <?php echo $color == 'Black' ? 'selected' : ''; ?>>Black</option>
+                                    <option value="Red" <?php echo $color == 'Red' ? 'selected' : ''; ?>>Red</option>
+                                    <option value="Purple" <?php echo $color == 'Purple' ? 'selected' : ''; ?>>Purple</option>
+                                    <option value="Multi-color" <?php echo $color == 'Multi-color' ? 'selected' : ''; ?>>Multi-color</option>
+                                    <option value="Grey" <?php echo $color == 'Grey' ? 'selected' : ''; ?>>Grey</option>
+                                    <option value="Yellow" <?php echo $color == 'Yellow' ? 'selected' : ''; ?>>Yellow</option>
+                                    <option value="Other" <?php echo $color == 'Other' ? 'selected' : ''; ?>>Other</option>
                                 </select>
                             </div>
 
-                            <!-- Sightings Count Filter
+                            <!-- Sightings Count Filter -->
                             <div class="form-group">
                                 <label>Sightings Count:</label>
-                                <select name="sightings" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="sightings" class="form-control" onchange="this.form.submit()">
                                     <option value="">Any</option>
                                     <option value="1" <?php echo $sightings == '1' ? 'selected' : ''; ?>>1</option>
                                     <option value="2" <?php echo $sightings == '2' ? 'selected' : ''; ?>>2</option>
@@ -86,12 +91,12 @@ include 'template/header.phtml'; ?>
                                     <option value="5" <?php echo $sightings == '5' ? 'selected' : ''; ?>>5</option>
                                     <option value="5+" <?php echo $sightings == '5+' ? 'selected' : ''; ?>>More than 5</option>
                                 </select>
-                            </div>   -->
+                            </div>
 
                             <!-- Age Filter -->
                             <div class="form-group">
                                 <label>Age:</label>
-                                <select name="age" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="age" class="form-control" onchange="this.form.submit()">
                                     <option value="">Any Age</option>
                                     <option value="1-5" <?php echo $age == '1-5' ? 'selected' : ''; ?>>1-5 years</option>
                                     <option value="6-10" <?php echo $age == '6-10' ? 'selected' : ''; ?>>6-10 years</option>
@@ -103,7 +108,7 @@ include 'template/header.phtml'; ?>
                             <!-- Gender Filter -->
                             <div class="form-group">
                                 <label>Gender:</label>
-                                <select name="gender" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="gender" class="form-control" onchange="this.form.submit()">
                                     <option value="">Any Gender</option>
                                     <option value="Male" <?php echo $gender == 'Male' ? 'selected' : ''; ?>>♂ Male</option>
                                     <option value="Female" <?php echo $gender == 'Female' ? 'selected' : ''; ?>>♀ Female</option>
@@ -113,7 +118,7 @@ include 'template/header.phtml'; ?>
                             <!-- Reward Filter -->
                             <div class="form-group">
                                 <label>Reward:</label>
-                                <select name="reward" class="form-control no-zoom" onchange="this.form.submit()">
+                                <select name="reward" class="form-control" onchange="this.form.submit()">
                                     <option value="">Any Reward</option>
                                     <option value="0-50" <?php echo $reward == '0-50' ? 'selected' : ''; ?>>£0 - £50</option>
                                     <option value="50-100" <?php echo $reward == '50-100' ? 'selected' : ''; ?>>£50 - £100</option>
@@ -124,7 +129,7 @@ include 'template/header.phtml'; ?>
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-default btn-block touch-friendly">Apply Filters</button>
+                            <button type="submit" class="btn btn-default btn-block">Apply Filters</button>
                             <a href="browse.php" class="btn btn-link btn-block">Clear All Filters</a>
                         </form>
                     </div>
@@ -132,26 +137,20 @@ include 'template/header.phtml'; ?>
             </div>
 
             <!-- 宠物列表区域 -->
-            <div class="col-md-9">
+            <div class="col-xs-12 col-md-9 col-lg-10">
                 <?php if (empty($pets) && !empty($search)): ?>
                     <div class="alert alert-info text-center">
-                        <p> Sorry, your search for "<?php echo htmlspecialchars($search); ?>" did not match any pets.</p>
+                        <p>Sorry, your search for "<?php echo htmlspecialchars($search); ?>" did not match any pets.</p>
                         <p>Try different keywords or <a href="browse.php">clear your search</a>.</p>
                     </div>
                 <?php elseif (empty($pets)): ?>
                     <div class="alert alert-info text-center">
-                        <p> No pets found matching your criteria.</p>
+                        <p>No pets found matching your criteria.</p>
                         <p><a href="browse.php">Clear all filters</a> to see all pets.</p>
                     </div>
                 <?php else: ?>
-                    <!-- 列导航按钮 -->
-                    <div class="column-navigation">
-                        <button class="btn btn-default" onclick="scrollColumns(-1)">← Prev Columns</button>
-                        <button class="btn btn-default" onclick="scrollColumns(1)">Next Columns →</button>
-                    </div>
-
-                    <!-- 桌面端表格 (隐藏于移动端) -->
-                    <div class="desktop-table">
+                    <!-- 桌面端表格 - 在移动端隐藏 -->
+                    <div class="hidden-xs hidden-sm">
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <thead>
@@ -182,15 +181,15 @@ include 'template/header.phtml'; ?>
                                         <td><?php echo htmlspecialchars($pet['color']); ?></td>
                                         <td>
                                             <?php if (!empty($pet['photo_url'])): ?>
-                                                <img src="../images/dog.png" alt="Pet photo" class="mobile-optimized-img" style="width: 50px; height: 50px;">
+                                                <img src="../images/dog.png" alt="Pet photo" class="img-responsive" style="max-width: 50px;">
                                             <?php else: ?>
                                                 No photo
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                        <span class="label <?php echo $pet['status'] == 'lost' ? 'label-danger' : 'label-success'; ?>">
-                                            <?php echo htmlspecialchars($pet['status']); ?>
-                                        </span>
+                                            <span class="label <?php echo $pet['status'] == 'lost' ? 'label-danger' : 'label-success'; ?>">
+                                                <?php echo htmlspecialchars($pet['status']); ?>
+                                            </span>
                                         </td>
                                         <td><?php echo htmlspecialchars(substr($pet['description'], 0, 50) . '...'); ?></td>
                                         <td><?php echo htmlspecialchars($pet['date_reported']); ?></td>
@@ -204,51 +203,55 @@ include 'template/header.phtml'; ?>
                         </div>
                     </div>
 
-                    <!-- 移动端卡片布局 (隐藏于桌面端) -->
-                    <div class="mobile-cards">
+                    <!-- 移动端卡片布局 - 在桌面端隐藏 -->
+                    <div class="visible-xs-block visible-sm-block hidden-md hidden-lg hidden-xl">
                         <?php foreach ($pets as $pet): ?>
-                            <div class="mobile-pet-card">
-                                <div class="pet-header">
-                                    <h3 class="pet-name"><?php echo htmlspecialchars($pet['name']); ?></h3>
-                                    <span class="pet-status <?php echo $pet['status'] == 'lost' ? 'status-lost' : 'status-found'; ?>">
-                                <?php echo htmlspecialchars($pet['status']); ?>
-                            </span>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title pull-left"><?php echo htmlspecialchars($pet['name']); ?></h3>
+                                    <span class="label pull-right <?php echo $pet['status'] == 'lost' ? 'label-danger' : 'label-success'; ?>">
+                                    <?php echo htmlspecialchars($pet['status']); ?>
+                                </span>
+                                    <div class="clearfix"></div>
                                 </div>
-
-                                <div class="pet-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Species</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($pet['species']); ?></span>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <strong>Species:</strong> <?php echo htmlspecialchars($pet['species']); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <strong>Gender:</strong> <?php echo htmlspecialchars(isset($pet['gender']) ? $pet['gender'] : 'Unknown'); ?>
+                                        </div>
                                     </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Gender</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars(isset($pet['gender']) ? $pet['gender'] : 'Unknown'); ?></span>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <strong>Age:</strong> <?php echo htmlspecialchars(isset($pet['age']) ? $pet['age'] : 'Unknown'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <strong>Breed:</strong> <?php echo htmlspecialchars($pet['breed']); ?>
+                                        </div>
                                     </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Age</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars(isset($pet['age']) ? $pet['age'] : 'Unknown'); ?> years</span>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <strong>Color:</strong> <?php echo htmlspecialchars($pet['color']); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <strong>Sightings:</strong> <?php echo htmlspecialchars(isset($pet['sighting_count']) ? $pet['sighting_count'] : 0); ?>
+                                        </div>
                                     </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Breed</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($pet['breed']); ?></span>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <strong>Description:</strong> <?php echo htmlspecialchars($pet['description']); ?>
+                                        </div>
                                     </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Color</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars($pet['color']); ?></span>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <strong>Reported:</strong> <?php echo htmlspecialchars($pet['date_reported']); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <strong>Reward:</strong> £<?php echo number_format(isset($pet['total_reward']) ? $pet['total_reward'] : 0, 2); ?>
+                                        </div>
                                     </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Sightings</span>
-                                        <span class="detail-value"><?php echo htmlspecialchars(isset($pet['sighting_count']) ? $pet['sighting_count'] : 0); ?></span>
-                                    </div>
-                                </div>
-
-                                <div class="pet-description">
-                                    <?php echo htmlspecialchars($pet['description']); ?>
-                                </div>
-
-                                <div class="pet-meta">
-                                    <span>Reported: <?php echo htmlspecialchars($pet['date_reported']); ?></span>
-                                    <span>Reward: £<?php echo number_format(isset($pet['total_reward']) ? $pet['total_reward'] : 0, 2); ?></span>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -256,14 +259,13 @@ include 'template/header.phtml'; ?>
 
                     <!-- 分页 -->
                     <div class="row">
-                        <div class="col-md-12 text-center">
+                        <div class="col-xs-12 text-center">
                             <ul class="pagination">
                                 <?php if ($page > 1): ?>
                                     <li><a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">← Previous</a></li>
                                 <?php endif; ?>
 
                                 <?php
-                                // 显示分页数字，最多显示5个
                                 $startPage = max(1, $page - 2);
                                 $endPage = min($totalPages, $startPage + 4);
                                 $startPage = max(1, $endPage - 4);
@@ -283,79 +285,27 @@ include 'template/header.phtml'; ?>
                 <?php endif; ?>
 
                 <!-- 底部导航 -->
-                <div class="bottom-navigation">
-                    <a href="../index.php" class="btn btn-default">← Back to Home</a>
-                    <a href="#" class="btn btn-info">Help</a>
-                    <a href="login.php" class="btn btn-primary">Login</a>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="btn-group btn-group-justified">
+                            <a href="../index.php" class="btn btn-default">← Back to Home</a>
+                            <a href="#" class="btn btn-info">Help</a>
+                            <a href="login.php" class="btn btn-primary">Login</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript for enhanced mobile experience -->
     <script>
-        // 列滚动功能
-        let currentColumn = 0;
-        const visibleColumns = 6;
-
-        function scrollColumns(direction) {
-            const table = document.querySelector('.table-responsive');
-            if (!table) return;
-
-            const allColumns = table.querySelectorAll('thead th').length;
-
-            currentColumn += direction;
-
-            if (currentColumn < 0) currentColumn = 0;
-            if (currentColumn > allColumns - visibleColumns) currentColumn = allColumns - visibleColumns;
-
-            const scrollPosition = currentColumn * 120;
-            table.scrollLeft = scrollPosition;
-        }
-
-        // 移动端筛选面板切换
+        // JavaScript for mobile experience
         document.addEventListener('DOMContentLoaded', function() {
-            const filterToggle = document.querySelector('.filter-toggle');
-            const filterPanel = document.querySelector('.filter-panel .panel-body');
-
-            if (filterToggle && filterPanel) {
-                filterToggle.addEventListener('click', function() {
-                    if (filterPanel.style.display === 'none') {
-                        filterPanel.style.display = 'block';
-                        filterToggle.textContent = '✕';
-                    } else {
-                        filterPanel.style.display = 'none';
-                        filterToggle.textContent = '☰';
-                    }
-                });
-
-                // 初始状态：移动端隐藏筛选面板
-                if (window.innerWidth < 768) {
-                    filterPanel.style.display = 'none';
-                    filterToggle.textContent = '☰';
-                }
-            }
-
-            // 防止iOS缩放
-            const inputs = document.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.fontSize = '16px';
-                });
-            });
-        });
-
-        // 窗口大小改变时的处理
-        window.addEventListener('resize', function() {
-            const filterToggle = document.querySelector('.filter-toggle');
-            const filterPanel = document.querySelector('.filter-panel .panel-body');
-
-            if (filterToggle && filterPanel) {
-                if (window.innerWidth >= 768) {
-                    filterPanel.style.display = 'block';
-                    filterToggle.style.display = 'none';
-                } else {
-                    filterToggle.style.display = 'inline-block';
+            // 移动端自动折叠筛选面板
+            if (window.innerWidth < 768) {
+                var filterCollapse = document.getElementById('filterCollapse');
+                if (filterCollapse) {
+                    $(filterCollapse).collapse('hide');
                 }
             }
         });

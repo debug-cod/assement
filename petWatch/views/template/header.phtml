@@ -32,32 +32,13 @@
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li><a href="../index.php">Home</a></li>
-
-                    <?php
-                    // Check if user is logged in
-                    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true):
-                        ?>
-                        <!-- Links for logged in users -->
-                        <li><a href="#">Browse Pets</a></li>
-                        <li><a href="#">Search Database</a></li>
-                        <li><a href="#">Manage Pets</a></li>
-                    <?php else: ?>
-                        <!-- Links for non-logged in users -->
-                        <li><a href="../controllers/browse.php">Browse Pets</a></li>
-                        <li><a href="../controllers/login.php">Search Database</a></li>
-                    <?php endif; ?>
+                    <li><a href="../controllers/browse.php">Browse Pets</a></li>
+                    <li><a href="../controllers/help.php">Help</a></li>
+                    <!-- 将来可以添加更多导航链接 -->
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <?php
-                    // Check if user is logged in
-                    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true):
-                        ?>
-                        <li class="hidden-xs"><a href="#" style="color: black; font-weight: bold;">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></a></li>
-                        <li class="visible-xs-block text-center" style="display: none;"><a href="#" style="color: black; font-weight: bold;"><?php echo htmlspecialchars($_SESSION['username']); ?></a></li>
-                        <li><a href="../controllers/logout.php" onclick="return confirmLogout()">Log Out</a></li>
-                    <?php else: ?>
-                        <li><a href="../controllers/login.php">Login</a></li>
-                    <?php endif; ?>
+                    <!-- 暂时只显示登录链接，等MVC实现后再添加状态判断 -->
+                    <li><a href="../controllers/login.php">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -67,9 +48,4 @@
 <!-- Main content container -->
 <div class="container main-content">
 
-    <!-- Simple JavaScript for logout confirmation -->
-    <script>
-        function confirmLogout() {
-            return confirm("Are you sure you want to log out?");
-        }
-    </script>
+    <!-- 移除了注销确认的JavaScript，等需要时再添加 -->
