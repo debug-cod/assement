@@ -1,0 +1,264 @@
+<?php global $totalPages, $page, $reward, $gender, $age, $sightings, $color, $sort, $species, $search;
+include 'template/header.phtml'; ?>
+
+    <div class="container">
+        <div class="row">
+            <!-- Search Section -->
+            <div class="col-md-12">
+                <div class="well text-center" style="background-color: #dff0d8; border-color: #d6e9c6;">
+                    <form method="get" action="browse.php" class="form-inline">
+                        <div class="form-group" style="margin-right: 15px;">
+                            <input type="text" name="search" class="form-control"
+                                   placeholder="Search pets..." value="<?php echo htmlspecialchars($search); ?>"
+                                   style="min-width: 300px;">
+                        </div>
+                        <button type="submit" class="btn btn-success">Search</button>
+                    </form>
+                    <p class="text-muted" style="margin-top: 10px; margin-bottom: 0;">
+                        This page is for preview only. Please login to modify or delete records.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Filters</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form method="get" action="browse.php" id="filterForm">
+                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+
+                            <!-- Species Filter -->
+                            <div class="form-group">
+                                <label>Species:</label>
+                                <select name="species" class="form-control" onchange="this.form.submit()">
+                                    <option value="">All Species</option>
+                                    <option value="Cat" <?php echo $species == 'Cat' ? 'selected' : ''; ?>>Cat</option>
+                                    <option value="Dog" <?php echo $species == 'Dog' ? 'selected' : ''; ?>>Dog</option>
+                                    <option value="Bird" <?php echo $species == 'Bird' ? 'selected' : ''; ?>>Bird</option>
+                                    <option value="Rabbit" <?php echo $species == 'Rabbit' ? 'selected' : ''; ?>>Rabbit</option>
+                                    <option value="Hamster" <?php echo $species == 'Hamster' ? 'selected' : ''; ?>>Hamster</option>
+                                    <option value="Other" <?php echo $species == 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Filter -->
+                            <div class="form-group">
+                                <label>Sort by Date:</label>
+                                <select name="sort" class="form-control" onchange="this.form.submit()">
+                                    <option value="late" <?php echo $sort == 'late' ? 'selected' : ''; ?>>Latest First</option>
+                                    <option value="early" <?php echo $sort == 'early' ? 'selected' : ''; ?>>Earliest First</option>
+                                </select>
+                            </div>
+
+                            <!-- Color Filter -->
+                            <div class="form-group">
+                                <label>Color:</label>
+                                <select name="color" class="form-control" onchange="this.form.submit()">
+                                    <option value="">All Colors</option>
+                                    <option value="White" <?php echo $color == 'White' ? 'selected' : ''; ?>>White</option>
+                                    <option value="Black" <?php echo $color == 'Black' ? 'selected' : ''; ?>>Black</option>
+                                    <option value="Red" <?php echo $color == 'Red' ? 'selected' : ''; ?>>Red</option>
+                                    <option value="Purple" <?php echo $color == 'Purple' ? 'selected' : ''; ?>>Purple</option>
+                                    <option value="Multi-color" <?php echo $color == 'Multi-color' ? 'selected' : ''; ?>>Multi-color</option>
+                                    <option value="Grey" <?php echo $color == 'Grey' ? 'selected' : ''; ?>>Grey</option>
+                                    <option value="Yellow" <?php echo $color == 'Yellow' ? 'selected' : ''; ?>>Yellow</option>
+                                    <option value="Other" <?php echo $color == 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Sightings Filter -->
+                            <div class="form-group">
+                                <label>Sightings Count:</label>
+                                <select name="sightings" class="form-control" onchange="this.form.submit()">
+                                    <option value="">Any</option>
+                                    <option value="1" <?php echo $sightings == '1' ? 'selected' : ''; ?>>1</option>
+                                    <option value="2" <?php echo $sightings == '2' ? 'selected' : ''; ?>>2</option>
+                                    <option value="3" <?php echo $sightings == '3' ? 'selected' : ''; ?>>3</option>
+                                    <option value="4" <?php echo $sightings == '4' ? 'selected' : ''; ?>>4</option>
+                                    <option value="5" <?php echo $sightings == '5' ? 'selected' : ''; ?>>5</option>
+                                    <option value="5+" <?php echo $sightings == '5+' ? 'selected' : ''; ?>>More than 5</option>
+                                </select>
+                            </div>
+
+                            <!-- Age Filter -->
+                            <div class="form-group">
+                                <label>Age:</label>
+                                <select name="age" class="form-control" onchange="this.form.submit()">
+                                    <option value="">Any Age</option>
+                                    <option value="1-5" <?php echo $age == '1-5' ? 'selected' : ''; ?>>1-5 years</option>
+                                    <option value="6-10" <?php echo $age == '6-10' ? 'selected' : ''; ?>>6-10 years</option>
+                                    <option value="15-20" <?php echo $age == '15-20' ? 'selected' : ''; ?>>15-20 years</option>
+                                    <option value="20+" <?php echo $age == '20+' ? 'selected' : ''; ?>>More than 20 years</option>
+                                </select>
+                            </div>
+
+                            <!-- Gender Filter -->
+                            <div class="form-group">
+                                <label>Gender:</label>
+                                <select name="gender" class="form-control" onchange="this.form.submit()">
+                                    <option value="">Any Gender</option>
+                                    <option value="Male" <?php echo $gender == 'Male' ? 'selected' : ''; ?>>Male</option>
+                                    <option value="Female" <?php echo $gender == 'Female' ? 'selected' : ''; ?>>Female</option>
+                                </select>
+                            </div>
+
+                            <!-- Reward Filter -->
+                            <div class="form-group">
+                                <label>Reward:</label>
+                                <select name="reward" class="form-control" onchange="this.form.submit()">
+                                    <option value="">Any Reward</option>
+                                    <option value="0-50" <?php echo $reward == '0-50' ? 'selected' : ''; ?>>£0 - £50</option>
+                                    <option value="50-100" <?php echo $reward == '50-100' ? 'selected' : ''; ?>>£50 - £100</option>
+                                    <option value="100-200" <?php echo $reward == '100-200' ? 'selected' : ''; ?>>£100 - £200</option>
+                                    <option value="200-250" <?php echo $reward == '200-250' ? 'selected' : ''; ?>>£200 - £250</option>
+                                    <option value="250-300" <?php echo $reward == '250-300' ? 'selected' : ''; ?>>£250 - £300</option>
+                                    <option value="300+" <?php echo $reward == '300+' ? 'selected' : ''; ?>>£300+</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-default btn-block">Apply Filters</button>
+                            <a href="browse.php" class="btn btn-link btn-block">Clear All</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pets Listing -->
+            <div class="col-md-9">
+                <?php if (empty($pets) && !empty($search)): ?>
+                    <div class="alert alert-info">
+                        <p>Sorry, your search for "<?php echo htmlspecialchars($search); ?>" did not match any pets in our database.</p>
+                    </div>
+                <?php elseif (empty($pets)): ?>
+                    <div class="alert alert-info">
+                        <p>No pets found matching your criteria.</p>
+                    </div>
+                <?php else: ?>
+                    <!-- Column Navigation -->
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-12 text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-default" onclick="scrollColumns(-1)">← Previous Columns</button>
+                                <button class="btn btn-default" onclick="scrollColumns(1)">Next Columns →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pets Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Species</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Breed</th>
+                                <th>Color</th>
+                                <th>Photo</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                                <th>Date Reported</th>
+                                <th>Sightings</th>
+                                <th>Reward</th>
+                                <th>Last Seen</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($pets as $pet): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($pet['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($pet['species']); ?></td>
+                                    <td><?php echo htmlspecialchars(isset($pet['gender']) ? $pet['gender'] : 'Unknown'); ?></td>
+                                    <td><?php echo htmlspecialchars(isset($pet['age']) ? $pet['age'] : 'Unknown'); ?></td>
+                                    <td><?php echo htmlspecialchars($pet['breed']); ?></td>
+                                    <td><?php echo htmlspecialchars($pet['color']); ?></td>
+                                    <td>
+                                        <?php if (!empty($pet['photo_url'])): ?>
+                                            <img src="../images/dog.png" alt="Pet photo" style="width: 50px; height: 50px;">
+                                        <?php else: ?>
+                                            No photo
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                    <span class="label label-<?php echo $pet['status'] == 'lost' ? 'danger' : 'success'; ?>">
+                                        <?php echo htmlspecialchars($pet['status']); ?>
+                                    </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars(substr($pet['description'], 0, 50) . '...'); ?></td>
+                                    <td><?php echo htmlspecialchars($pet['date_reported']); ?></td>
+                                    <td><?php echo htmlspecialchars(isset($pet['sighting_count']) ? $pet['sighting_count'] : 0); ?></td>
+                                    <td>£<?php echo number_format(isset($pet['total_reward']) ? $pet['total_reward'] : 0, 2); ?></td>
+                                    <td><?php echo htmlspecialchars(isset($pet['last_sighting']) ? $pet['last_sighting'] : 'Never'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <ul class="pagination">
+                                <?php if ($page > 1): ?>
+                                    <li><a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">← Previous</a></li>
+                                <?php endif; ?>
+
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <li class="<?php echo $i == $page ? 'active' : ''; ?>">
+                                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <?php if ($page < $totalPages): ?>
+                                    <li><a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>">Next →</a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Bottom Navigation -->
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-md-4 text-left">
+                        <a href="../index.php" class="btn btn-default">← Back to Home</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <a href="#" class="btn btn-info">Help</a>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a href="login.php" class="btn btn-primary">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for column scrolling -->
+    <script>
+        let currentColumn = 0;
+        const visibleColumns = 6; // Number of columns visible at once
+
+        function scrollColumns(direction) {
+            const table = document.querySelector('.table-responsive');
+            const allColumns = table.querySelectorAll('thead th').length;
+
+            currentColumn += direction;
+
+            // Ensure we don't scroll beyond boundaries
+            if (currentColumn < 0) currentColumn = 0;
+            if (currentColumn > allColumns - visibleColumns) currentColumn = allColumns - visibleColumns;
+
+            // Calculate scroll position
+            const scrollPosition = currentColumn * 120; // Approximate column width
+
+            table.scrollLeft = scrollPosition;
+        }
+    </script>
+
+<?php include 'template/footer.phtml'; ?>

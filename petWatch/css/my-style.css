@@ -106,6 +106,52 @@ body {
     display: inline-block;
 }
 
+/* Browse page styles - HANDWRITTEN */
+.well {
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.label-danger {
+    background-color: #ff0000;
+}
+
+.label-success {
+    background-color: #28a745;
+}
+
+.pagination > li > a {
+    color: #000;
+    border: 1px solid #000;
+}
+
+.pagination > li.active > a {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.pagination > li > a:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
+}
+
 /* Login page styles - HANDWRITTEN */
 .login-container {
     max-width: 400px;
@@ -187,6 +233,46 @@ body {
 
     .social-icon {
         margin: 0 10px;
+    }
+}
+
+/* Mobile styles for browse page */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 12px;
+    }
+
+    .btn-group .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .form-inline .form-control {
+        min-width: 200px !important;
+    }
+
+    .col-md-3, .col-md-9 {
+        width: 100%;
+    }
+
+    .panel-body .form-group {
+        margin-bottom: 10px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .table-responsive {
+        font-size: 10px;
+    }
+
+    .btn {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .form-inline .form-control {
+        min-width: 150px !important;
     }
 }
 
