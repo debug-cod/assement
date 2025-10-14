@@ -75,30 +75,26 @@ class PetModel
             }
         }
 
-        // Sighting count filter
-        if (!empty($filters['sightings'])) {
-            if ($filters['sightings'] === '5+') {
-                $sql .= " HAVING COUNT(s.id) > 5";
-            } else {
-                $sql .= " HAVING COUNT(s.id) = ?";
-                $params[] = (int)$filters['sightings'];
-            }
-        }
-
-        // Reward filter
-        if (!empty($filters['reward'])) {
-            switch ($filters['reward']) {
-                case '0-50': $sql .= " AND COALESCE(SUM(s.reward), 0) BETWEEN 0 AND 50"; break;
-                case '50-100': $sql .= " AND COALESCE(SUM(s.reward), 0) BETWEEN 50 AND 100"; break;
-                case '100-200': $sql .= " AND COALESCE(SUM(s.reward), 0) BETWEEN 100 AND 200"; break;
-                case '200-250': $sql .= " AND COALESCE(SUM(s.reward), 0) BETWEEN 200 AND 250"; break;
-                case '250-300': $sql .= " AND COALESCE(SUM(s.reward), 0) BETWEEN 250 AND 300"; break;
-                case '300+': $sql .= " AND COALESCE(SUM(s.reward), 0) > 300"; break;
-            }
-        }
-
-        // Group and order
+        // Group by
         $sql .= " GROUP BY p.id";
+
+        // HAVING conditions for aggregate functions
+        $havingAdded = false;
+
+        // Reward filter - fixed: now in HAVING clause
+        if (!empty($filters['reward'])) {
+            $sql .= " HAVING COALESCE(SUM(s.reward), 0) ";
+
+            switch ($filters['reward']) {
+                case '0-50': $sql .= "BETWEEN 0 AND 50"; break;
+                case '50-100': $sql .= "BETWEEN 50 AND 100"; break;
+                case '100-200': $sql .= "BETWEEN 100 AND 200"; break;
+                case '200-250': $sql .= "BETWEEN 200 AND 250"; break;
+                case '250-300': $sql .= "BETWEEN 250 AND 300"; break;
+                case '300+': $sql .= "> 300"; break;
+            }
+            $havingAdded = true;
+        }
 
         // Sorting
         $sort = isset($filters['sort']) ? $filters['sort'] : 'late';
@@ -125,10 +121,8 @@ class PetModel
     // Get total count for pagination
     public function getTotalPets($search = '', $filters = [])
     {
-        // Similar query as above but without LIMIT and only count
         $sql = "SELECT COUNT(DISTINCT p.id) as total
                 FROM pets p
-                LEFT JOIN sightings s ON p.id = s.pet_id
                 WHERE 1=1";
 
         $params = [];
@@ -140,8 +134,58 @@ class PetModel
             $params = array_fill(0, 5, $searchTerm);
         }
 
-        // Apply same filters as above...
-        // (Filter logic would be duplicated here for counting)
+        // Apply same filters as getPets
+        if (!empty($filters['species'])) {
+            if ($filters['species'] === 'Other') {
+                $sql .= " AND p.species NOT IN ('Cat', 'Dog', 'Bird', 'Rabbit', 'Hamster')";
+            } else {
+                $sql .= " AND p.species = ?";
+                $params[] = $filters['species'];
+            }
+        }
+
+        if (!empty($filters['color'])) {
+            if ($filters['color'] === 'Other') {
+                $sql .= " AND p.color NOT IN ('White', 'Black', 'Red', 'Purple', 'Multi-color', 'Grey', 'Yellow')";
+            } else {
+                $sql .= " AND p.color = ?";
+                $params[] = $filters['color'];
+            }
+        }
+
+        if (!empty($filters['gender'])) {
+            $sql .= " AND p.gender = ?";
+            $params[] = $filters['gender'];
+        }
+
+        // Age filter
+        if (!empty($filters['age'])) {
+            switch ($filters['age']) {
+                case '1-5': $sql .= " AND p.age BETWEEN 1 AND 5"; break;
+                case '6-10': $sql .= " AND p.age BETWEEN 6 AND 10"; break;
+                case '15-20': $sql .= " AND p.age BETWEEN 15 AND 20"; break;
+                case '20+': $sql .= " AND p.age > 20"; break;
+            }
+        }
+
+        // For reward filter, we need to check if pets have matching sightings
+        if (!empty($filters['reward'])) {
+            $sql .= " AND p.id IN (
+                SELECT pet_id FROM sightings 
+                GROUP BY pet_id 
+                HAVING COALESCE(SUM(reward), 0) ";
+
+            switch ($filters['reward']) {
+                case '0-50': $sql .= "BETWEEN 0 AND 50"; break;
+                case '50-100': $sql .= "BETWEEN 50 AND 100"; break;
+                case '100-200': $sql .= "BETWEEN 100 AND 200"; break;
+                case '200-250': $sql .= "BETWEEN 200 AND 250"; break;
+                case '250-300': $sql .= "BETWEEN 250 AND 300"; break;
+                case '300+': $sql .= "> 300"; break;
+            }
+
+            $sql .= ")";
+        }
 
         try {
             $stmt = $this->db->prepare($sql);
