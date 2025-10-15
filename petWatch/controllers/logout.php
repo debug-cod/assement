@@ -5,13 +5,17 @@
 // Start session
 session_start();
 
-// Clear all session variables
-$_SESSION = array();
+// 1. Clear 'Remember Me' Cookie
+// Delete the persistent login cookie by setting its expiration time in the past
+if (isset($_COOKIE['remember_username'])) {
+    setcookie('remember_username', '', time() - 3600, '/');
+}
 
-// Destroy the session
+// 2. Clear all session variables and destroy the session
+$_SESSION = array();
 session_destroy();
 
-// Redirect to home page
+// 3. Redirect to home page
 header("Location: ../index.php");
 exit();
 ?>
