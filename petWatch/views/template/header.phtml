@@ -14,6 +14,13 @@
 </head>
 <body>
 
+<?php
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!-- Header section with navigation -->
 <header>
     <nav class="navbar navbar-default">
@@ -34,11 +41,27 @@
                     <li><a href="../index.php">Home</a></li>
                     <li><a href="../controllers/browse.php">Browse Pets</a></li>
                     <li><a href="../controllers/help.php">Help</a></li>
-                    <!-- 将来可以添加更多导航链接 -->
+
+                    <!-- Show additional links based on user role and login status -->
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                        <?php if ($_SESSION['user_role'] === 'user'): ?>
+                            <!-- Regular user (browse_users) sees these links -->
+                            <li><a href="#">View sightings</a></li>
+                            <li><a href="#">Report Sightings</a></li>
+                        <?php elseif ($_SESSION['user_role'] === 'pet_owner'): ?>
+                            <!-- Pet owner sees this link -->
+                            <li><a href="#">Manage Pets</a></li>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <!-- 暂时只显示登录链接，等MVC实现后再添加状态判断 -->
-                    <li><a href="../controllers/login.php">Login</a></li>
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                        <!-- Show logout link if user is logged in -->
+                        <li><a href="../controllers/logout.php" onclick="return confirmLogout()">Logout (<?php echo htmlspecialchars($_SESSION['username']); ?>)</a></li>
+                    <?php else: ?>
+                        <!-- Show login link if user is not logged in -->
+                        <li><a href="../controllers/login.php">Login</a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -48,4 +71,19 @@
 <!-- Main content container -->
 <div class="container main-content">
 
-    <!-- 移除了注销确认的JavaScript，等需要时再添加 -->
+    <!-- Simple JavaScript for logout confirmation -->
+    <script>
+        // Function to confirm logout
+        function confirmLogout() {
+            // Show confirmation dialog
+            var confirmLogout = confirm("Are you sure you want to logout?");
+
+            // If user clicks "Cancel", prevent the link from following through
+            if (!confirmLogout) {
+                return false;
+            }
+
+            // If user clicks "OK", the link will proceed normally
+            return true;
+        }
+    </script>
