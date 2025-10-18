@@ -42,15 +42,16 @@ if (session_status() == PHP_SESSION_NONE) {
                     <li><a href="../controllers/browse.php">Browse Pets</a></li>
                     <li><a href="../controllers/help.php">Help</a></li>
 
-                    <!-- Show additional links based on user role and login status -->
+                    <!-- 在 header.phtml 中修改这部分代码 -->
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
                         <?php if ($_SESSION['user_role'] === 'user'): ?>
                             <!-- Regular user (browse_users) sees these links -->
-                            <li><a href="#">View sightings</a></li>
-                            <li><a href="#">Report Sightings</a></li>
+                            <li><a href="../controllers/view_sightings.php">View sightings</a></li>
+                            <li><a href="../controllers/report_sighting.php">Report Sightings</a></li>
                         <?php elseif ($_SESSION['user_role'] === 'pet_owner'): ?>
                             <!-- Pet owner sees this link -->
                             <li><a href="#">Manage Pets</a></li>
+                            <li><a href="#">report new missing pet</a> </li>
                         <?php endif; ?>
                     <?php endif; ?>
                 </ul>
