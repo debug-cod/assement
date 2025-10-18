@@ -289,8 +289,14 @@
                     <div class="col-xs-12">
                         <div class="btn-group btn-group-justified">
                             <a href="../index.php" class="btn btn-default">← Back to Home</a>
-                            <a href="#" class="btn btn-info">Help</a>
-                            <a href="login.php" class="btn btn-primary">Login</a>
+                            <a href="help.php" class="btn btn-info">Help</a>
+                            <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                                <!-- 登录状态下显示Logout按钮 -->
+                                <a href="logout.php" class="btn btn-primary" onclick="return confirmLogout()">Logout</a>
+                            <?php else: ?>
+                                <!-- 未登录状态下显示Login按钮 -->
+                                <a href="login.php" class="btn btn-primary">Login</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -312,3 +318,29 @@
     </script>
 
 <?php include 'template/footer.phtml'; ?>
+<script>
+    // JavaScript for mobile experience
+    document.addEventListener('DOMContentLoaded', function() {
+        // 移动端自动折叠筛选面板
+        if (window.innerWidth < 768) {
+            var filterCollapse = document.getElementById('filterCollapse');
+            if (filterCollapse) {
+                $(filterCollapse).collapse('hide');
+            }
+        }
+    });
+
+    // Function to confirm logout
+    function confirmLogout() {
+        // Show confirmation dialog
+        var confirmLogout = confirm("Are you sure you want to logout?");
+
+        // If user clicks "Cancel", prevent the link from following through
+        if (!confirmLogout) {
+            return false;
+        }
+
+        // If user clicks "OK", the link will proceed normally
+        return true;
+    }
+</script>
