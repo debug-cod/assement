@@ -1,4 +1,5 @@
-<?php include 'template/header.phtml'; ?>
+<?php global $search, $petOwnerModel, $totalPages, $page;
+include 'template/header.phtml'; ?>
 
     <div class="row">
         <div class="col-md-12">
@@ -56,9 +57,10 @@
                                 <div class="panel-body">
                                     <!-- Pet Image -->
                                     <div class="text-center">
-                                        <img src="../images/<?php echo htmlspecialchars($pet['photo_url']); ?>"
+                                        <img src="../images/pet-image/<?php echo htmlspecialchars($pet['photo_url']); ?>"
                                              alt="<?php echo htmlspecialchars($pet['name']); ?>"
-                                             class="img-responsive" style="max-height: 150px; margin: 0 auto;">
+                                             class="img-responsive" style="max-height: 150px; margin: 0 auto;"
+                                             onerror="this.src='../images/pet-image/default-pet.png'">
                                     </div>
 
                                     <!-- Pet Details -->

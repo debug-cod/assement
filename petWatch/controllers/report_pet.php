@@ -54,13 +54,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Handle file upload for photo
     $photo_url = 'default-pet.png'; // default image
+
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = '../images/pet-image/';
-        $photo_name = uniqid() . '_' . basename($_FILES['photo']['name']);
+
+        // Ensure the directory exists
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+
+        // Generate unique filename
+        $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+        $photo_name = 'pet_' . uniqid() . '.' . $file_extension;
         $photo_path = $upload_dir . $photo_name;
 
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
-            $photo_url = $photo_name;
+        // Check if file is an image
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array(strtolower($file_extension), $allowed_types)) {
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
+                $photo_url = $photo_name;
+            } else {
+                $error_message = "Failed to upload photo. Please try again.";
+            }
+        } else {
+            $error_message = "Only JPG, JPEG, PNG, and GIF files are allowed.";
         }
     } elseif ($edit_mode && $pet_data) {
         // Keep existing photo if editing and no new photo uploaded
