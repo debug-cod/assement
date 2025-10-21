@@ -1,5 +1,5 @@
 <?php
-// controllers/report_sighting.phtml
+// controllers/report_sighting.php
 
 // Start session and check if user is logged in
 if (session_status() == PHP_SESSION_NONE) {
@@ -34,16 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $latitude = isset($_POST['latitude']) ? trim($_POST['latitude']) : '';
     $longitude = isset($_POST['longitude']) ? trim($_POST['longitude']) : '';
     $timestamp = isset($_POST['timestamp']) ? trim($_POST['timestamp']) : '';
-    $reward = isset($_POST['reward']) ? (float)$_POST['reward'] : 0;
     $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-    // Validate required fields
+    // Validate required fields - 使用简单的验证
     if (empty($pet_id) || empty($latitude) || empty($longitude) || empty($timestamp)) {
         $error_message = "Please fill in all required fields.";
     } else {
         if ($action === 'save') {
-            // Add new sighting
-            if ($sightingModel->addSighting($pet_id, $_SESSION['user_id'], $comment, $latitude, $longitude, $timestamp, $reward)) {
+            // Add new sighting - 移除了reward参数
+            if ($sightingModel->addSighting($pet_id, $_SESSION['user_id'], $comment, $latitude, $longitude, $timestamp, 0)) {
                 $success_message = "Sighting reported successfully!";
             } else {
                 $error_message = "Failed to report sighting. Please try again.";

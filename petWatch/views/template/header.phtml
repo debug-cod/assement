@@ -50,8 +50,8 @@ if (session_status() == PHP_SESSION_NONE) {
                             <li><a href="../controllers/report_sighting.php">Report Sightings</a></li>
                         <?php elseif ($_SESSION['user_role'] === 'pet_owner'): ?>
                             <!-- Pet owner sees this link -->
-                            <li><a href="#">Manage Pets</a></li>
-                            <li><a href="#">report new missing pet</a> </li>
+                            <li><a href="../controllers/manage_pets.php">Manage Pets</a></li>
+                            <li><a href="../controllers/report_pet.php">Report New Missing Pet</a></li>
                         <?php endif; ?>
                     <?php endif; ?>
                 </ul>

@@ -32,15 +32,16 @@ class SightingModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // 在SightingModel.php中，确保addSighting方法可以处理reward为0的情况
     /**
      * Add a new sighting
      */
-    public function addSighting($pet_id, $user_id, $comment, $latitude, $longitude, $timestamp, $reward)
+    public function addSighting($pet_id, $user_id, $comment, $latitude, $longitude, $timestamp, $reward = 0)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO sightings (pet_id, user_id, comment, latitude, longitude, timestamp, reward)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
+        INSERT INTO sightings (pet_id, user_id, comment, latitude, longitude, timestamp, reward)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
         return $stmt->execute([$pet_id, $user_id, $comment, $latitude, $longitude, $timestamp, $reward]);
     }
 
