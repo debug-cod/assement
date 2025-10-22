@@ -1,33 +1,39 @@
 <?php
-// Browse controller for petWatch
-// This file handles pet browsing and searching
+/**
+ * Browse Pets Controller for petWatch Application
+ *
+ * This controller handles the display and filtering of pet listings.
+ * Users can search, filter by various criteria, and paginate through pet results.
+ */
 
-// Start session if not already started
+// Start session if not already started to maintain user state
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set page title
+// Set the page title for browser tab and header display
 $page_title = "Browse Pets - petWatch";
 
-// Include model
+// Include required model classes for data operations
 require_once '../Model/PetModel.php';
+require_once '../Model/UserModel.php'; // Provides database connection functionality
 
-// Create model instance
-$petModel = new PetModel('../database/petwatch.sqlite');
+// Create database connection and initialize PetModel for pet data operations
+$db = getDbConnection();
+$petModel = new PetModel($db); // PetModel now accepts PDO connection instead of file path
 
-// Get search and filter parameters
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$species = isset($_GET['species']) ? $_GET['species'] : '';
-$color = isset($_GET['color']) ? $_GET['color'] : '';
-$gender = isset($_GET['gender']) ? $_GET['gender'] : '';
-$age = isset($_GET['age']) ? $_GET['age'] : '';
-$sightings = isset($_GET['sightings']) ? $_GET['sightings'] : '';
-$reward = isset($_GET['reward']) ? $_GET['reward'] : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'late';
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+// use the get method to retrieve all data
+$search = isset($_GET['search']) ? $_GET['search'] : '';        // Text search term
+$species = isset($_GET['species']) ? $_GET['species'] : '';     // Filter by animal species
+$color = isset($_GET['color']) ? $_GET['color'] : '';           // Filter by pet color
+$gender = isset($_GET['gender']) ? $_GET['gender'] : '';        // Filter by pet gender
+$age = isset($_GET['age']) ? $_GET['age'] : '';                 // Filter by pet age
+$sightings = isset($_GET['sightings']) ? $_GET['sightings'] : ''; // Filter by number of sightings
+$reward = isset($_GET['reward']) ? $_GET['reward'] : '';        // Filter by reward status
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'late';          // Sort parameter (default: latest)
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;          // Current page for pagination
 
-// Prepare filters array
+// Prepare filters array to consolidate all filter parameters
 $filters = [
     'species' => $species,
     'color' => $color,
@@ -38,14 +44,18 @@ $filters = [
     'sort' => $sort
 ];
 
-// Clean empty filters
+// Remove empty filter values
 $filters = array_filter($filters);
 
-// Get pets data
-$pets = $petModel->getPets($search, $filters, $page, 10);
+// Retrieve paginated pet data based on search criteria and filters
+$pets = $petModel->getPets($search, $filters, $page, 10); // Get 10 pets per page
+
+// Get total count of pets matching the criteria for pagination calculation
 $totalPets = $petModel->getTotalPets($search, $filters);
+
+// Calculate total number of pages needed for pagination
 $totalPages = ceil($totalPets / 10);
 
-// Include view
+// Include the view template to render the browse pets page
 include '../views/browse.phtml';
 ?>

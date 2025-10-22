@@ -1,4 +1,5 @@
-<?php include 'template/header.phtml'; ?>
+<?php global $search;
+include 'template/header.phtml'; ?>
 
     <div class="row">
         <div class="col-md-12">
@@ -51,11 +52,12 @@
                                     </h4>
                                 </div>
                                 <div class="panel-body">
-                                    <!-- Pet Image -->
+                                    <!-- Pet Image - FIXED PATH -->
                                     <div class="text-center">
-                                        <img src="../images/<?php echo htmlspecialchars($sighting['photo_url']); ?>"
+                                        <img src="../images/pet-image/<?php echo htmlspecialchars($sighting['photo_url']); ?>"
                                              alt="<?php echo htmlspecialchars($sighting['pet_name']); ?>"
-                                             class="img-responsive" style="max-height: 150px; margin: 0 auto;">
+                                             class="img-responsive" style="max-height: 150px; margin: 0 auto;"
+                                             onerror="this.src='../images/pet-image/default-pet.png'">
                                     </div>
 
                                     <!-- Pet Details -->
@@ -89,11 +91,11 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Navigation Buttons -->
+            <!-- Navigation Buttons - FIXED LINK -->
             <div class="text-center" style="margin-top: 30px;">
                 <a href="../index.php" class="btn btn-default">Home</a>
                 <a href="help.php" class="btn btn-default">Help</a>
-                <a href="report_sighting.phtml" class="btn btn-default">Report New Sighting</a>
+                <a href="report_sighting.php" class="btn btn-default">Report New Sighting</a>
             </div>
         </div>
     </div>

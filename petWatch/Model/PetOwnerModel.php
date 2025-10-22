@@ -1,6 +1,7 @@
 <?php
 // Model/PetOwnerModel.php
-
+//use the model loader
+require_once '../Model/ModelLoader.php';
 /**
  * Handles all pet owner related database operations for petWatch.
  */

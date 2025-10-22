@@ -1,28 +1,48 @@
 <?php
-// Pet model for database operations
-// This file handles all database queries for pets
+// Model/PetModel.php
 
-class PetModel
+//use the model loader
+require_once '../Model/ModelLoader.php';
+
+/**
+ * PetModel class - Handles pet browsing and search operations
+ * Extends PetRelatedModel to inherit pet-specific functionality
+ * This demonstrates multi-level inheritance
+ */
+class PetModel extends PetRelatedModel
 {
-    private $db;
-
-    // Constructor - connect to database
-    public function __construct($databasePath)
+    /**
+     * Get the table name for this model
+     * @return string Table name
+     */
+    protected function getTableName(): string
     {
-        try {
-            $this->db = new PDO('sqlite:' . $databasePath);
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
-        }
+        return 'pets';
     }
 
-    // Get all pets with search and filter
+    /**
+     * Get searchable fields for pet model
+     * @return array List of searchable field names
+     */
+    protected function getSearchableFields(): array
+    {
+        return ['name', 'species', 'breed', 'color', 'description'];
+    }
+
+    /**
+     * Get all pets with advanced search and filtering
+     * This method demonstrates complex query building with inheritance
+     * @param string $search Search term
+     * @param array $filters Array of filter conditions
+     * @param int $page Page number for pagination
+     * @param int $perPage Number of items per page
+     * @return array Array of pet records with additional data
+     */
     public function getPets($search = '', $filters = [], $page = 1, $perPage = 10)
     {
         $offset = ($page - 1) * $perPage;
 
-        // Base query with joins
+        // Base query with joins - demonstrates complex SQL
         $sql = "SELECT p.*, 
                        COUNT(s.id) as sighting_count,
                        COALESCE(SUM(s.reward), 0) as total_reward,
@@ -33,108 +53,46 @@ class PetModel
 
         $params = [];
 
-        // Search functionality
+        // Search functionality using inherited method
         if (!empty($search)) {
-            $sql .= " AND (p.name LIKE ? OR p.species LIKE ? OR p.breed LIKE ? 
-                     OR p.color LIKE ? OR p.description LIKE ?)";
-            $searchTerm = "%$search%";
-            $params = array_fill(0, 5, $searchTerm);
+            $searchCondition = $this->buildSearchCondition($this->getSearchableFields(), $search);
+            $sql .= $searchCondition[0];
+            $params = array_merge($params, $searchCondition[1]);
         }
 
-        // Apply filters
-        if (!empty($filters['species'])) {
-            if ($filters['species'] === 'Other') {
-                $sql .= " AND p.species NOT IN ('Cat', 'Dog', 'Bird', 'Rabbit', 'Hamster')";
-            } else {
-                $sql .= " AND p.species = ?";
-                $params[] = $filters['species'];
-            }
-        }
-
-        if (!empty($filters['color'])) {
-            if ($filters['color'] === 'Other') {
-                $sql .= " AND p.color NOT IN ('White', 'Black', 'Red', 'Purple', 'Multi-color', 'Grey', 'Yellow')";
-            } else {
-                $sql .= " AND p.color = ?";
-                $params[] = $filters['color'];
-            }
-        }
-
-        if (!empty($filters['gender'])) {
-            $sql .= " AND p.gender = ?";
-            $params[] = $filters['gender'];
-        }
-
-        // Age filter
-        if (!empty($filters['age'])) {
-            switch ($filters['age']) {
-                case '1-5': $sql .= " AND p.age BETWEEN 1 AND 5"; break;
-                case '6-10': $sql .= " AND p.age BETWEEN 6 AND 10"; break;
-                case '15-20': $sql .= " AND p.age BETWEEN 15 AND 20"; break;
-                case '20+': $sql .= " AND p.age > 20"; break;
-            }
-        }
+        // Apply filters - demonstrates complex conditional logic
+        $sql = $this->applyFilters($sql, $filters, $params);
 
         // Group by
         $sql .= " GROUP BY p.id";
 
         // HAVING conditions for aggregate functions
-        $havingAdded = false;
-
-        // Reward filter - fixed: now in HAVING clause
-        if (!empty($filters['reward'])) {
-            $sql .= " HAVING COALESCE(SUM(s.reward), 0) ";
-
-            switch ($filters['reward']) {
-                case '0-50': $sql .= "BETWEEN 0 AND 50"; break;
-                case '50-100': $sql .= "BETWEEN 50 AND 100"; break;
-                case '100-200': $sql .= "BETWEEN 100 AND 200"; break;
-                case '200-250': $sql .= "BETWEEN 200 AND 250"; break;
-                case '250-300': $sql .= "BETWEEN 250 AND 300"; break;
-                case '300+': $sql .= "> 300"; break;
-            }
-            $havingAdded = true;
-        }
+        $sql = $this->applyHavingConditions($sql, $filters);
 
         // Sorting
         $sort = isset($filters['sort']) ? $filters['sort'] : 'late';
-        if ($sort === 'early') {
-            $sql .= " ORDER BY p.date_reported ASC";
-        } else {
-            $sql .= " ORDER BY p.date_reported DESC";
-        }
+        $sql .= ($sort === 'early') ? " ORDER BY p.date_reported ASC" : " ORDER BY p.date_reported DESC";
 
-        // Add limit for pagination
+        // Add pagination
         $sql .= " LIMIT ? OFFSET ?";
         $params[] = $perPage;
         $params[] = $offset;
 
-        try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return [];
-        }
+        // Execute query using inherited method
+        $stmt = $this->executeStatement($sql, $params);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    // Get total count for pagination
-    public function getTotalPets($search = '', $filters = [])
+    /**
+     * Apply filter conditions to SQL query
+     * @param string $sql Current SQL query
+     * @param array $filters Filter conditions
+     * @param array $params Query parameters (passed by reference)
+     * @return string Modified SQL query
+     */
+    private function applyFilters(string $sql, array $filters, array &$params): string
     {
-        $sql = "SELECT COUNT(DISTINCT p.id) as total
-                FROM pets p
-                WHERE 1=1";
-
-        $params = [];
-
-        if (!empty($search)) {
-            $sql .= " AND (p.name LIKE ? OR p.species LIKE ? OR p.breed LIKE ? 
-                     OR p.color LIKE ? OR p.description LIKE ?)";
-            $searchTerm = "%$search%";
-            $params = array_fill(0, 5, $searchTerm);
-        }
-
-        // Apply same filters as getPets
+        // Species filter
         if (!empty($filters['species'])) {
             if ($filters['species'] === 'Other') {
                 $sql .= " AND p.species NOT IN ('Cat', 'Dog', 'Bird', 'Rabbit', 'Hamster')";
@@ -144,6 +102,7 @@ class PetModel
             }
         }
 
+        // Color filter
         if (!empty($filters['color'])) {
             if ($filters['color'] === 'Other') {
                 $sql .= " AND p.color NOT IN ('White', 'Black', 'Red', 'Purple', 'Multi-color', 'Grey', 'Yellow')";
@@ -153,6 +112,7 @@ class PetModel
             }
         }
 
+        // Gender filter
         if (!empty($filters['gender'])) {
             $sql .= " AND p.gender = ?";
             $params[] = $filters['gender'];
@@ -160,41 +120,91 @@ class PetModel
 
         // Age filter
         if (!empty($filters['age'])) {
-            switch ($filters['age']) {
-                case '1-5': $sql .= " AND p.age BETWEEN 1 AND 5"; break;
-                case '6-10': $sql .= " AND p.age BETWEEN 6 AND 10"; break;
-                case '15-20': $sql .= " AND p.age BETWEEN 15 AND 20"; break;
-                case '20+': $sql .= " AND p.age > 20"; break;
-            }
+            $sql .= $this->getAgeCondition($filters['age']);
         }
+
+        return $sql;
+    }
+
+    /**
+     * Get SQL condition for age filter
+     * @param string $ageRange Age range string
+     * @return string SQL condition for age
+     */
+    private function getAgeCondition(string $ageRange): string
+    {
+        switch ($ageRange) {
+            case '1-5': return " AND p.age BETWEEN 1 AND 5";
+            case '6-10': return " AND p.age BETWEEN 6 AND 10";
+            case '15-20': return " AND p.age BETWEEN 15 AND 20";
+            case '20+': return " AND p.age > 20";
+            default: return "";
+        }
+    }
+
+    /**
+     * Apply HAVING conditions for aggregate functions
+     * @param string $sql Current SQL query
+     * @param array $filters Filter conditions
+     * @return string Modified SQL query
+     */
+    private function applyHavingConditions(string $sql, array $filters): string
+    {
+        if (!empty($filters['reward'])) {
+            $sql .= " HAVING COALESCE(SUM(s.reward), 0) " . $this->getRewardCondition($filters['reward']);
+        }
+        return $sql;
+    }
+
+    /**
+     * Get SQL condition for reward filter
+     * @param string $rewardRange Reward range string
+     * @return string SQL condition for reward
+     */
+    private function getRewardCondition(string $rewardRange): string
+    {
+        switch ($rewardRange) {
+            case '0-50': return "BETWEEN 0 AND 50";
+            case '50-100': return "BETWEEN 50 AND 100";
+            case '100-200': return "BETWEEN 100 AND 200";
+            case '200-250': return "BETWEEN 200 AND 250";
+            case '250-300': return "BETWEEN 250 AND 300";
+            case '300+': return "> 300";
+            default: return "BETWEEN 0 AND 999999";
+        }
+    }
+
+    /**
+     * Get total count of pets for pagination
+     * Overrides parent method to handle complex filtering
+     * @param string $search Search term
+     * @param array $filters Filter conditions
+     * @return int Total number of pets
+     */
+    public function getTotalPets($search = '', $filters = [])
+    {
+        $sql = "SELECT COUNT(DISTINCT p.id) as total FROM pets p WHERE 1=1";
+        $params = [];
+
+        // Search using inherited method
+        if (!empty($search)) {
+            $searchCondition = $this->buildSearchCondition($this->getSearchableFields(), $search);
+            $sql .= $searchCondition[0];
+            $params = $searchCondition[1];
+        }
+
+        // Apply same filters as getPets
+        $sql = $this->applyFilters($sql, $filters, $params);
 
         // For reward filter, we need to check if pets have matching sightings
         if (!empty($filters['reward'])) {
-            $sql .= " AND p.id IN (
-                SELECT pet_id FROM sightings 
-                GROUP BY pet_id 
-                HAVING COALESCE(SUM(reward), 0) ";
-
-            switch ($filters['reward']) {
-                case '0-50': $sql .= "BETWEEN 0 AND 50"; break;
-                case '50-100': $sql .= "BETWEEN 50 AND 100"; break;
-                case '100-200': $sql .= "BETWEEN 100 AND 200"; break;
-                case '200-250': $sql .= "BETWEEN 200 AND 250"; break;
-                case '250-300': $sql .= "BETWEEN 250 AND 300"; break;
-                case '300+': $sql .= "> 300"; break;
-            }
-
-            $sql .= ")";
+            $sql .= " AND p.id IN (SELECT pet_id FROM sightings GROUP BY pet_id 
+                      HAVING COALESCE(SUM(reward), 0) " . $this->getRewardCondition($filters['reward']) . ")";
         }
 
-        try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute($params);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return isset($result['total']) ? $result['total'] : 0;
-        } catch (PDOException $e) {
-            return 0;
-        }
+        $stmt = $this->executeStatement($sql, $params);
+        $result = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : ['total' => 0];
+        return isset($result['total']) ? (int)$result['total'] : 0;
     }
 }
 ?>
