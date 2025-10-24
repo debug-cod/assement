@@ -3,27 +3,33 @@ include 'template/header.phtml'; ?>
 
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
+            <!-- Dynamic title based on edit mode -->
             <h2 class="text-center"><?php echo $edit_mode ? 'Edit Pet' : 'Report New Missing Pet'; ?></h2>
 
+            <!-- Error message display -->
             <?php if (isset($error_message) && $error_message): ?>
                 <div class="alert alert-danger">
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Success message display -->
             <?php if (isset($success_message) && $success_message): ?>
                 <div class="alert alert-success">
                     <?php echo htmlspecialchars($success_message); ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Pet form (new or edit) -->
             <form method="post" action="report_pet.php<?php echo $edit_mode ? '?edit_id=' . $pet_data['id'] : ''; ?>" enctype="multipart/form-data">
+                <!-- Pet name field -->
                 <div class="form-group">
                     <label for="name">Pet Name *</label>
                     <input type="text" class="form-control" id="name" name="name"
                            value="<?php echo $edit_mode ? htmlspecialchars($pet_data['name']) : ''; ?>" required>
                 </div>
 
+                <!-- Species and breed row -->
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -41,6 +47,7 @@ include 'template/header.phtml'; ?>
                     </div>
                 </div>
 
+                <!-- Color and gender row -->
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -61,6 +68,7 @@ include 'template/header.phtml'; ?>
                     </div>
                 </div>
 
+                <!-- Age and status row -->
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -82,6 +90,7 @@ include 'template/header.phtml'; ?>
                     </div>
                 </div>
 
+                <!-- Photo upload field -->
                 <div class="form-group">
                     <label for="photo">Pet Photo</label>
                     <input type="file" class="form-control" id="photo" name="photo" accept="image/*" onchange="previewImage(this)">
@@ -95,12 +104,17 @@ include 'template/header.phtml'; ?>
                                  onerror="this.src='../images/pet-image/default-pet.png'">
                         </div>
                     <?php endif; ?>
+                    <!-- Image preview container -->
                     <div id="imagePreview" class="text-center" style="margin-top: 10px; display: none;">
                         <img id="preview" src="#" alt="Image preview" class="img-responsive" style="max-height: 150px; margin: 0 auto;">
                     </div>
                 </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary btn-block"><?php echo $edit_mode ? 'Update Pet' : 'Report Missing Pet'; ?></button>
             </form>
 
+            <!-- Navigation buttons -->
             <div class="text-center" style="margin-top: 30px;">
                 <a href="../index.php" class="btn btn-default">Home</a>
                 <a href="help.php" class="btn btn-default">Help</a>

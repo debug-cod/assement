@@ -12,13 +12,13 @@
                     <a href="controllers/help.php" class="btn btn-default btn-lg">Help</a>
 
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
-                        <!-- 已登录状态：显示登出按钮 -->
+                        <!-- Logged in state: Show logout button -->
                         <a href="controllers/logout.php" class="btn btn-warning btn-lg"
                            onclick="return confirm('Are you sure you want to logout?')">
-                            Logout (<?php echo htmlspecialchars($_SESSION['username']); ?>)
+                            Logout
                         </a>
                     <?php else: ?>
-                        <!-- 未登录状态：显示登录按钮 -->
+                        <!-- Logged out state: Show login button -->
                         <a href="controllers/login.php" class="btn btn-primary btn-lg">Login</a>
                     <?php endif; ?>
                 </div>
@@ -26,6 +26,7 @@
         </div>
     </div>
 
+    <!-- Feature icons section -->
     <div class="row text-center">
         <div class="col-xs-12 col-sm-4">
             <span class="glyphicon glyphicon-plus" style="font-size:50px;"></span>

@@ -1,5 +1,4 @@
 <?php
-// Model/SightingModel.php
 
 //use the model loader
 require_once '../Model/ModelLoader.php';

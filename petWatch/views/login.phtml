@@ -4,6 +4,7 @@
         <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
             <h2 class="text-center">Login to petWatch</h2>
 
+            <!-- Error message display -->
             <?php if (isset($error_message) && $error_message): ?>
                 <div class="alert alert-danger">
                     <?php echo htmlspecialchars($error_message);
@@ -12,23 +13,25 @@
             <?php endif;
             ?>
 
+            <!-- Login form -->
             <form method="post" action="login.php">
+                <!-- Username input field -->
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" class="form-control" id="username" name="username" required
                            value="<?php echo htmlspecialchars($_COOKIE['remember_username'] ?? ''); ?>">
                 </div>
 
-
+                <!-- Password input field -->
                 <div class="form-group">
                     <label for="password">Password:</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                     <small class="text-muted">
-
                         Password must be at least 12 characters long with uppercase, lowercase, numbers and symbols.
                     </small>
                 </div>
 
+                <!-- Remember me checkbox -->
                 <div class="form-group">
                     <div class="checkbox">
                         <label>
@@ -37,13 +40,15 @@
                     </div>
                 </div>
 
+                <!-- Submit button -->
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
             </form>
 
+            <!-- Test accounts information -->
             <div class="text-center" style="margin-top: 20px;">
                 <h4>Test Accounts:</h4>
                 <p class="hidden-xs"><strong>User id:1</strong> Username: <code>Lee</code>
-                     Password: <code>123456——mbeeWawx</code> users_type:browse_users</p>
+                    Password: <code>123456——mbeeWawx</code> users_type:browse_users</p>
                 <p class="hidden-xs"><strong>User id:11</strong> Username: <code>amanda_clark</code> |
                     Password: <code>ClarkAmanda$123</code> users_type:pet_owner</p>
                 <p class="visible-xs-block"><small>View test accounts on desktop for better readability</small></p>

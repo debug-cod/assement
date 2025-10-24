@@ -1,6 +1,4 @@
 <?php
-// Model/PetRelatedModel.php
-//use the model loader
 require_once '../Model/ModelLoader.php';
 /**
  * Abstract PetRelatedModel class

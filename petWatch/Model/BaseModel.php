@@ -1,5 +1,4 @@
 <?php
-// Model/BaseModel.php
 require_once '../Model/ModelLoader.php';
 /**
  * Abstract BaseModel class

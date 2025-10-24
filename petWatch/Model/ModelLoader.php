@@ -1,6 +1,5 @@
 <?php
-// Model/ModelLoader.php
-
+//create a model-loader make sure everything can be load in different devices
 /**
  * ModelLoader - Handles loading all model classes in correct order
  * This ensures proper inheritance chain and avoids class not found errors

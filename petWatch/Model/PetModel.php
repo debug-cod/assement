@@ -1,5 +1,4 @@
 <?php
-// Model/PetModel.php
 
 //use the model loader
 require_once '../Model/ModelLoader.php';

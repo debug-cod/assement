@@ -5,12 +5,14 @@ include 'template/header.phtml'; ?>
         <div class="col-md-12">
             <h2 class="text-center">My Reported Sightings</h2>
 
+            <!-- Error message display -->
             <?php if (isset($error_message) && $error_message): ?>
                 <div class="alert alert-danger">
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Success message display -->
             <?php if (isset($success_message) && $success_message): ?>
                 <div class="alert alert-success">
                     <?php echo htmlspecialchars($success_message); ?>
@@ -31,6 +33,7 @@ include 'template/header.phtml'; ?>
 
             <!-- Sightings List -->
             <?php if (empty($userSightings)): ?>
+                <!-- No sightings message -->
                 <div class="alert alert-info text-center">
                     <?php if (!empty($search)): ?>
                         No sightings found matching your search criteria.
@@ -42,17 +45,19 @@ include 'template/header.phtml'; ?>
                 <div class="row">
                     <?php foreach ($userSightings as $sighting): ?>
                         <div class="col-md-6 col-lg-4">
+                            <!-- Sighting card panel -->
                             <div class="panel panel-default" style="min-height: 400px;">
                                 <div class="panel-heading">
                                     <h4 class="panel-title">
                                         <?php echo htmlspecialchars($sighting['pet_name']); ?>
+                                        <!-- Reward label -->
                                         <span class="label label-primary pull-right">
                                         £<?php echo number_format($sighting['reward'], 2); ?>
                                     </span>
                                     </h4>
                                 </div>
                                 <div class="panel-body">
-                                    <!-- Pet Image - FIXED PATH -->
+                                    <!-- Pet Image -->
                                     <div class="text-center">
                                         <img src="../images/pet-image/<?php echo htmlspecialchars($sighting['photo_url']); ?>"
                                              alt="<?php echo htmlspecialchars($sighting['pet_name']); ?>"
@@ -91,7 +96,7 @@ include 'template/header.phtml'; ?>
                 </div>
             <?php endif; ?>
 
-            <!-- Navigation Buttons - FIXED LINK -->
+            <!-- Navigation Buttons -->
             <div class="text-center" style="margin-top: 30px;">
                 <a href="../index.php" class="btn btn-default">Home</a>
                 <a href="help.php" class="btn btn-default">Help</a>

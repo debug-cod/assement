@@ -2,22 +2,26 @@
 include 'template/header.phtml'; ?>
 
     <div class="row">
-        <div class="col-md-6 col-md-offset-3"> <!-- 改为居中布局 -->
+        <div class="col-md-6 col-md-offset-3"> <!-- Centered layout -->
             <h2 class="text-center">Report New Sighting</h2>
 
+            <!-- Error message display -->
             <?php if (isset($error_message) && $error_message): ?>
                 <div class="alert alert-danger">
                     <?php echo htmlspecialchars($error_message); ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Success message display -->
             <?php if (isset($success_message) && $success_message): ?>
                 <div class="alert alert-success">
                     <?php echo htmlspecialchars($success_message); ?>
                 </div>
             <?php endif; ?>
 
+            <!-- Sighting report form -->
             <form method="post" action="report_sighting.php">
+                <!-- Pet selection dropdown -->
                 <div class="form-group">
                     <label for="pet_id">Select Pet *</label>
                     <select class="form-control" id="pet_id" name="pet_id" required>
@@ -33,7 +37,7 @@ include 'template/header.phtml'; ?>
                     </select>
                 </div>
 
-                <!-- Pet info display -->
+                <!-- Pet information display (shown when pet is selected) -->
                 <div id="petInfo" class="well" style="display: none;">
                     <div class="row">
                         <div class="col-sm-3">
@@ -47,12 +51,14 @@ include 'template/header.phtml'; ?>
                     </div>
                 </div>
 
+                <!-- Comment field -->
                 <div class="form-group">
                     <label for="comment">Comment</label>
                     <textarea class="form-control" id="comment" name="comment" rows="3"
                               placeholder="Enter any additional details about the sighting..."></textarea>
                 </div>
 
+                <!-- Location and timestamp row -->
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -76,8 +82,7 @@ include 'template/header.phtml'; ?>
                     </div>
                 </div>
 
-                <!-- 移除了Additional Reward字段 -->
-
+                <!-- Form action buttons -->
                 <div class="form-group text-center">
                     <button type="submit" name="action" value="save" class="btn btn-primary btn-lg">
                         Save Sighting
@@ -88,6 +93,7 @@ include 'template/header.phtml'; ?>
                 </div>
             </form>
 
+            <!-- Navigation buttons -->
             <div class="text-center" style="margin-top: 30px;">
                 <a href="../index.php" class="btn btn-default">Home</a>
                 <a href="help.php" class="btn btn-default">Help</a>
@@ -96,9 +102,9 @@ include 'template/header.phtml'; ?>
         </div>
     </div>
 
-    <!-- 移除了复杂的JavaScript验证，使用简单的HTML5验证 -->
+    <!-- JavaScript for dynamic pet information display -->
     <script>
-        // Simple function to show pet info when a pet is selected
+        // Function to show pet info when a pet is selected
         document.getElementById('pet_id').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const petInfo = document.getElementById('petInfo');
@@ -107,7 +113,7 @@ include 'template/header.phtml'; ?>
                 document.getElementById('petName').textContent = selectedOption.text.split(' - ')[0];
                 document.getElementById('petDescription').textContent = selectedOption.getAttribute('data-description');
                 document.getElementById('petReward').textContent = selectedOption.getAttribute('data-reward');
-                document.getElementById('petPhoto').src = '../images/' + selectedOption.getAttribute('data-photo');
+                document.getElementById('petPhoto').src = '../images/pet-image/' + selectedOption.getAttribute('data-photo');
                 petInfo.style.display = 'block';
             } else {
                 petInfo.style.display = 'none';

@@ -25,6 +25,7 @@ if (session_status() == PHP_SESSION_NONE) {
 <header>
     <nav class="navbar navbar-default">
         <div class="container">
+            <!-- Brand and mobile menu toggle -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#myNavbar">
                     <span class="sr-only">Toggle navigation</span>
@@ -32,29 +33,33 @@ if (session_status() == PHP_SESSION_NONE) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+                <!-- Website logo -->
                 <a class="navbar-brand" href="../index.php">
                     <img src="../images/pet-logo.png" alt="petWatch Logo">
                 </a>
             </div>
+            <!-- Navigation menu -->
             <div class="collapse navbar-collapse" id="myNavbar">
+                <!-- Left side navigation links -->
                 <ul class="nav navbar-nav">
                     <li><a href="../index.php">Home</a></li>
                     <li><a href="../controllers/browse.php">Browse Pets</a></li>
                     <li><a href="../controllers/help.php">Help</a></li>
 
-                    <!-- 在 header.phtml 中修改这部分代码 -->
+                    <!-- Role-based navigation links for logged-in users -->
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
                         <?php if ($_SESSION['user_role'] === 'user'): ?>
                             <!-- Regular user (browse_users) sees these links -->
                             <li><a href="../controllers/view_sightings.php">View sightings</a></li>
                             <li><a href="../controllers/report_sighting.php">Report Sightings</a></li>
                         <?php elseif ($_SESSION['user_role'] === 'pet_owner'): ?>
-                            <!-- Pet owner sees this link -->
+                            <!-- Pet owner sees these links -->
                             <li><a href="../controllers/manage_pets.php">Manage Pets</a></li>
                             <li><a href="../controllers/report_pet.php">Report New Missing Pet</a></li>
                         <?php endif; ?>
                     <?php endif; ?>
                 </ul>
+                <!-- Right side navigation links -->
                 <ul class="nav navbar-nav navbar-right">
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
                         <!-- Show logout link if user is logged in -->
