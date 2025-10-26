@@ -1,0 +1,197 @@
+/* Responsive design is completely handled by Bootstrap except the large moniter like 32 inch or even larger devices*/
+
+/* Base styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+}
+
+.container.main-content {
+    flex: 1 0 auto; /* Flex grow, don't shrink, auto basis */
+    padding: 20px 0;
+}
+
+/* Navigation bar styles */
+.navbar-default {
+    background-color: white;
+    border-bottom: 3px solid black;
+    margin-bottom: 0;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-top: -10px;
+}
+
+.navbar-nav li a {
+    color: black !important;
+    font-weight: bold;
+}
+
+.navbar-nav li a:hover {
+    color: red !important;
+}
+
+.navbar-nav .active a {
+    background-color: black !important;
+    color: white !important;
+}
+
+/* Footer styles */
+.footer {
+    background-color: black;
+    color: white;
+    padding: 20px 0;
+    margin-top: auto; /* Push footer to bottom */
+    flex-shrink: 0; /* Don't shrink footer */
+    width: 100%;
+}
+
+.footer a {
+    color: white;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: red;
+    text-decoration: underline;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: black;
+    border-color: black;
+}
+
+.btn-primary:hover {
+    color: red;
+}
+
+/* Home page button hover styles */
+.btn-default:hover {
+    color: red !important;
+}
+
+/* Table styles */
+.table th {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9; /* Zebra striping for table rows */
+}
+
+/* Label styles */
+.label-danger {
+    background-color: #ff0000;
+}
+
+.label-success {
+    background-color: #28a745;
+}
+
+/* Search area styles */
+.well {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+/* Pagination styles */
+.pagination > li > a {
+    color: #000;
+    border: 1px solid #000;
+}
+
+.pagination > li.active > a {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.pagination > li > a:hover {
+    background-color: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
+}
+
+/* Navigation bar link hover effects */
+.navbar-nav li a:hover {
+    color: red !important;
+}
+
+/* 32-inch large screen optimization - minimum width 1920px */
+@media (min-width: 1920px) {
+    /* Search area optimization - move search and query buttons upward */
+    .search-well {
+        padding: 20px 30px 30px 30px; /* Reduced top padding, maintain bottom padding */
+        margin-bottom: 20px;
+        margin-top: -10px; /* Move entire search area upward */
+    }
+
+    /* Filter panel optimization - move filter buttons upward */
+    .filter-panel {
+        margin-top: -10px; /* Move entire filter panel upward */
+    }
+
+    .filter-panel .panel-body {
+        padding: 20px 25px 25px 25px; /* Reduced top padding */
+    }
+
+    /* Keep other existing styles unchanged */
+    .container {
+        max-width: 1800px;
+        width: 90%;
+    }
+
+    .navbar-brand img {
+        height: 50px;
+    }
+
+    .navbar-nav > li > a {
+        font-size: 18px;
+        padding: 25px 20px;
+    }
+
+    /* ... Keep other existing styles unchanged ... */
+}
+
+/* Extra large screen further optimization - minimum width 2560px (2K screens) */
+@media (min-width: 2560px) {
+    /* Further upward movement on larger screens */
+    .search-well {
+        margin-top: -15px;
+        padding: 15px 30px 30px 30px;
+    }
+
+    .filter-panel {
+        margin-top: -15px;
+    }
+
+    /* Keep other existing styles unchanged */
+    .container {
+        max-width: 2400px;
+    }
+
+    .navbar-brand img {
+        height: 60px;
+    }
+
+    .navbar-nav > li > a {
+        font-size: 20px;
+        padding: 30px 25px;
+    }
+
+    /* ... Keep other existing styles unchanged ... */
+}
