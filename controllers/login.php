@@ -1,104 +1,81 @@
 <?php
-/**
- * Login Controller for petWatch Application
- *
- * This controller handles user authentication, including:
- * - Form-based login with username/password
- * - "Remember Me" functionality using cookies
- * - Session management for authenticated users
- */
 
-// Start session if not already started to maintain user state
+  //Login page - handles user login with remember me feature
+
+
+// Start session for user login state
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set the page title for browser tab and header display
 $page_title = "Login - petWatch";
-
-// Initialize error message variable for user feedback
 $error_message = '';
 
-// Include required model from DB
+// Include user model for login
 require_once '../Model/UserModel.php';
 
-// Create database connection and initialize UserModel
+// Setup database and user model
 $db = getDbConnection();
 $userModel = new UserModel($db);
 
-/**
- * "Remember Me" Cookie Check
- *
- * If user is not logged in and have vaild cookies call "remember_username",
- * automatically store them in using the stored username.
- */
+// Check if user has remember me cookie
 if (!isset($_SESSION['loggedin']) && isset($_COOKIE['remember_username'])) {
     $username = $_COOKIE['remember_username'];
     $user = $userModel->getUserByUsername($username);
 
     if ($user) {
-        // Set session variables for authenticated user
+        // Auto-login user from cookie
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $username;
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['user_id'] = $user['id'];
 
-        // Redirect to home page after successful auto-login
+        // Go to home page
         header("Location: ../index.php");
         exit();
     }
 
-    // Clear invalid or expired cookie
+    // Clear bad cookie
     setcookie('remember_username', '', time() - 3600, '/');
 }
 
-/**
- * Form Submission Handling
- *
- * Process login form when user submits username and password.
- */
+// Handle login form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve data from input
     $username = isset($_POST['username']) ? trim($_POST['username']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
-    $remember_me = isset($_POST['remember_me']); // Check if "Remember Me" was selected
+    $remember_me = isset($_POST['remember_me']);
 
-    // make sure that both fields are filled
+    // Check if fields are filled
     if (empty($username) || empty($password)) {
         $error_message = "Please enter both username and password.";
     } else {
-        // Retrieve user data from database by username
+        // Check if user exists
         $user = $userModel->getUserByUsername($username);
 
         if ($user) {
-            // Verify password using secure password_verify
+            // Check password
             if ($userModel->verifyPassword($password, $user['password_hash'])) {
-                // Login successful - set session variables
+                // Login successful
                 $_SESSION['loggedin'] = true;
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['user_id'] = $user['id'];
 
-                /**
-                 * "Remember Me" Functionality
-                 *
-                 * If user selected "Remember Me", set a persistent cookie
-                 * that will automatically log them in on future visits.
-                 */
+                // Set remember me cookie if wanted
                 if ($remember_me) {
                     $cookie_name = 'remember_username';
                     $cookie_value = $user['username'];
-                    $expiry_time = time() + (86400 * 30); // 30 days from now
+                    $expiry_time = time() + (86400 * 30); // 30 days
 
                     setcookie($cookie_name, $cookie_value, [
                         'expires' => $expiry_time,
                         'path' => '/',
-                        'httponly' => true,    // Prevent JavaScript access for security
-                        'samesite' => 'Lax'    // CSRF protection
+                        'httponly' => true,
+                        'samesite' => 'Lax'
                     ]);
                 }
 
-                // Redirect to home page after successful login
+                // Go to home page
                 header("Location: ../index.php");
                 exit();
             } else {
@@ -110,6 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Include the view template to render the login form
+// Show login page
 include '../views/login.phtml';
 ?>

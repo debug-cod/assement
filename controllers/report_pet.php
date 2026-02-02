@@ -1,75 +1,52 @@
 <?php
-/**
- * Report Pet Controller for petWatch Application
- *
- * This controller allows pet owners to:
- * - Report new lost/found pets
- * - Edit existing pet information
- * - Upload pet photos
- * - Manage pet details and status
- */
 
-// Start session and check if user is logged in with appropriate role
+//Report Pet page - for adding new pets or editing existing ones
+
+
+// Start session and check login
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Authorization Check
- *
- * Verify that user is logged in and has 'pet_owner' role
- * If not, redirect to login page
- */
+// Check if user is logged in as pet owner
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['user_role'] !== 'pet_owner') {
     header("Location: login.php");
     exit();
 }
 
-// Set the page title for browser tab and header display
 $page_title = "Report New Pet - petWatch";
-
-// Initialize message variables for user feedback
 $error_message = '';
 $success_message = '';
 
-// Include required model classes for pet and user data operations
+// Include models
 require_once '../Model/PetOwnerModel.php';
 require_once '../Model/UserModel.php';
 
-// Create database connection and initialize PetOwnerModel
+// Setup database and pet owner model
 $db = getDbConnection();
 $petOwnerModel = new PetOwnerModel($db);
 
-/**
- * Edit Mode Detection
- *
- * Check if we're in edit mode (editing existing pet) or create mode (adding new pet)
- * Retrieve existing pet data if in edit mode
- */
+// Check if editing existing pet
 $edit_mode = false;
 $pet_data = null;
 if (isset($_GET['edit_id'])) {
     $edit_mode = true;
     $pet_id = (int)$_GET['edit_id'];
 
-    // Retrieve pet data, ensuring the pet belongs to the current user
+    // Get pet data (only if user owns it)
     $pet_data = $petOwnerModel->getPetById($pet_id, $_SESSION['user_id']);
 
     if (!$pet_data) {
         $error_message = "Pet not found or you don't have permission to edit it.";
         $edit_mode = false;
     } else {
-        $page_title = "Edit Pet - petWatch"; // Update title for edit mode
+        $page_title = "Edit Pet - petWatch";
     }
 }
 
-/**
- * Form Submission Handling
- *
- * Process pet data when form is submitted (both new pets and edits)
- */
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve and sanitize form inputs
+    // Get form data
     $name = isset($_POST['name']) ? trim($_POST['name']) : '';
     $species = isset($_POST['species']) ? trim($_POST['species']) : '';
     $breed = isset($_POST['breed']) ? trim($_POST['breed']) : '';
@@ -78,30 +55,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';
     $gender = isset($_POST['gender']) ? trim($_POST['gender']) : '';
     $age = isset($_POST['age']) ? (float)$_POST['age'] : 0;
-    $action = isset($_POST['action']) ? $_POST['action'] : ''; // Form action (save/clear)
+    $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-    /**
-     * Photo Upload Handling
-     *
-     * Process pet photo upload with validation and file type checking
-     * Uses default image if no photo is uploaded
-     */
-    $photo_url = 'default-pet.png'; // Default pet image
+    // Handle photo upload
+    $photo_url = 'default-pet.png'; // Default image
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = '../images/pet-image/';
 
-        // Create upload directory if it doesn't exist
+        // Create folder if needed
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
 
-        // Generate unique filename to prevent overwriting
+        // Make unique filename
         $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
         $photo_name = 'pet_' . uniqid() . '.' . $file_extension;
         $photo_path = $upload_dir . $photo_name;
 
-        // Validate file type and move uploaded file
+        // Check file type and save
         $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
         if (in_array(strtolower($file_extension), $allowed_types)) {
             if (move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
@@ -113,24 +85,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error_message = "Only JPG, JPEG, PNG, and GIF files are allowed.";
         }
     } elseif ($edit_mode && $pet_data) {
-        // Keep existing photo when editing and no new photo uploaded
+        // Keep old photo when editing
         $photo_url = $pet_data['photo_url'];
     }
 
-    // Validate that all required fields are filled
+    // Check all required fields
     if (empty($name) || empty($species) || empty($breed) || empty($color) || empty($status) || empty($description) || empty($gender)) {
         $error_message = "Please fill in all required fields.";
     } else {
         if ($action === 'save') {
             if ($edit_mode && $pet_data) {
-                // Update existing pet record
+                // Update existing pet
                 if ($petOwnerModel->updatePet($pet_data['id'], $_SESSION['user_id'], $name, $species, $breed, $color, $photo_url, $status, $description, $gender, $age)) {
                     $success_message = "Pet updated successfully!";
                 } else {
                     $error_message = "Failed to update pet. Please try again.";
                 }
             } else {
-                // Create new pet record
+                // Add new pet
                 if ($petOwnerModel->addPet($name, $species, $breed, $color, $photo_url, $status, $description, $_SESSION['user_id'], $gender, $age)) {
                     $success_message = "Pet reported successfully!";
                 } else {
@@ -138,10 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
         }
-        // If action is 'clear', simply reset the form (no database operation)
+        // If clear action, just reset form
     }
 }
 
-// Include the view template to render the pet reporting/editing form
+// Show report pet page
 include '../views/report_pet.phtml';
 ?>

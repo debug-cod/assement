@@ -1,11 +1,14 @@
 <?php
 
-// Start session and check if user is logged in
+  //Report Sighting page - for reporting pet sightings
+
+
+// Start session and check login
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in and is a regular user
+// Check if user is logged in as regular user
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['user_role'] !== 'user') {
     header("Location: login.php");
     exit();
@@ -19,11 +22,11 @@ $success_message = '';
 require_once '../Model/SightingModel.php';
 require_once '../Model/UserModel.php';
 
-// Get database connection
+// Setup database and sighting model
 $db = getDbConnection();
 $sightingModel = new SightingModel($db);
 
-// Get lost pets for the dropdown
+// Get lost pets for dropdown
 $lostPets = $sightingModel->getLostPets();
 
 // Handle form submission
@@ -35,22 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $timestamp = isset($_POST['timestamp']) ? trim($_POST['timestamp']) : '';
     $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-    // Validate required fields - 使用简单的验证
+    // Check required fields
     if (empty($pet_id) || empty($latitude) || empty($longitude) || empty($timestamp)) {
         $error_message = "Please fill in all required fields.";
     } else {
         if ($action === 'save') {
-            // Add new sighting - 移除了reward参数
+            // Add new sighting
             if ($sightingModel->addSighting($pet_id, $_SESSION['user_id'], $comment, $latitude, $longitude, $timestamp, 0)) {
                 $success_message = "Sighting reported successfully!";
             } else {
                 $error_message = "Failed to report sighting. Please try again.";
             }
         }
-        // If action is delete, just clear the form (no database operation)
+        // If delete action, just clear form
     }
 }
 
-// Include view
+// Show report sighting page
 include '../views/report_sighting.phtml';
 ?>
