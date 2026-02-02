@@ -1,18 +1,18 @@
 <?php
 //create a model-loader make sure everything can be load in different devices
 /**
- * ModelLoader - Handles loading all model classes in correct order
- * This ensures proper inheritance chain and avoids class not found errors
- * the reason of having this because I got multiply issue on model loading
+  ModelLoader - Handles loading all model classes in correct order
+  This ensures proper inheritance chain and avoids class not found errors
+  the reason of having this because I got multiply issue on model loading
  */
 
 class ModelLoader
 {
     private static $loaded = false;
 
-    /**
-     * Load all model classes in correct dependency order
-     */
+
+     // Load all model classes in correct dependency order
+
     public static function loadModels()
     {
         if (self::$loaded) {

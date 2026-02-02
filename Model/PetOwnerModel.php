@@ -2,21 +2,22 @@
 //use the model loader
 require_once '../Model/ModelLoader.php';
 /**
- * Handles all pet owner related database operations for petWatch.
+  PetOwnerModel - handles everything for pet owners
+  Add pets, view pets, update pets, delete pets, and see sightings
  */
 class PetOwnerModel
 {
     private $db;
 
-    // Constructor to receive the database connection
+    // Constructor needs database connection
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    /**
-     * Add a new pet
-     */
+
+     // Add a new pet to the system
+
     public function addPet($name, $species, $breed, $color, $photo_url, $status, $description, $user_id, $gender, $age, $reward = 0)
     {
         $stmt = $this->db->prepare("
@@ -27,7 +28,8 @@ class PetOwnerModel
     }
 
     /**
-     * Get pets by owner ID with search
+      Get pets owned by a specific user
+      Used on "my pets" page
      */
     public function getPetsByOwner($user_id, $search = '', $page = 1, $perPage = 9)
     {
@@ -44,6 +46,7 @@ class PetOwnerModel
 
         $params = [$user_id];
 
+        // Add search if needed
         if (!empty($search)) {
             $sql .= " AND (p.name LIKE ? OR p.species LIKE ? OR p.breed LIKE ? 
                      OR p.color LIKE ? OR p.description LIKE ? OR p.status LIKE ?)";
@@ -60,9 +63,9 @@ class PetOwnerModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Get total pets count for pagination
-     */
+
+    //  Count total pets for pagination
+
     public function getTotalPetsByOwner($user_id, $search = '')
     {
         $sql = "SELECT COUNT(*) as total FROM pets WHERE user_id = ?";
@@ -81,9 +84,9 @@ class PetOwnerModel
         return $result['total'];
     }
 
-    /**
-     * Get pet by ID and owner ID (for modification)
-     */
+
+     // Get one specific pet by ID - for editing
+
     public function getPetById($pet_id, $user_id)
     {
         $stmt = $this->db->prepare("
@@ -99,9 +102,8 @@ class PetOwnerModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Update a pet
-     */
+    //Update pet information
+
     public function updatePet($pet_id, $user_id, $name, $species, $breed, $color, $photo_url, $status, $description, $gender, $age)
     {
         $stmt = $this->db->prepare("
@@ -113,9 +115,9 @@ class PetOwnerModel
         return $stmt->execute([$name, $species, $breed, $color, $photo_url, $status, $description, $gender, $age, $pet_id, $user_id]);
     }
 
-    /**
-     * Delete a pet and its sightings
-     */
+
+    //  Delete a pet and all its sightings
+
     public function deletePet($pet_id, $user_id)
     {
         // First delete sightings for this pet
@@ -128,7 +130,8 @@ class PetOwnerModel
     }
 
     /**
-     * Get sightings for a specific pet
+      Get all sightings for a specific pet
+      Used on pet details page
      */
     public function getSightingsByPet($pet_id)
     {

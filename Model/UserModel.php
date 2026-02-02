@@ -4,26 +4,22 @@
 require_once '../Model/ModelLoader.php';
 
 /**
- * UserModel class - Handles all user-related database operations
- * Extends BaseModel to inherit common database functionality
- * This demonstrates single inheritance in PHP
+  UserModel - handles user login, registration, and user data
+  Extends BaseModel for common database functions
  */
 class UserModel extends BaseModel
 {
-    /**
-     * Get the table name for this model
-     * @return string Table name
-     */
+
+     // Tell which table this model uses
+
     protected function getTableName(): string
     {
         return 'users';
     }
 
-    /**
-     * Retrieves a user from the database by username
-     * @param string $username The username to search for
-     * @return array|false The user record as associative array, or false if not found
-     */
+
+     // Find a user by username - used for login
+
     public function getUserByUsername(string $username)
     {
         $sql = "SELECT id, username, password_hash, role FROM users WHERE username = :username";
@@ -31,32 +27,25 @@ class UserModel extends BaseModel
         return $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
     }
 
-    /**
-     * Verify password using password_verify - secure password comparison
-     * @param string $plainPassword Plain text password from user input
-     * @param string $hashedPassword Hashed password from database
-     * @return bool True if password matches, false otherwise
-     */
+
+    //  Check if password is correct
+
     public function verifyPassword(string $plainPassword, string $hashedPassword): bool
     {
         return password_verify($plainPassword, $hashedPassword);
     }
 
-    /**
-     * Hash password using password_hash - secure password hashing
-     * @param string $password Plain text password
-     * @return string Hashed password
-     */
+
+    //  Hash password for safe storage
+
     public function hashPassword(string $password): string
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    /**
-     * Get user by email - additional user lookup method
-     * @param string $email User's email address
-     * @return array|false User record or false if not found
-     */
+
+    //  Find user by email - for registration and password reset
+
     public function getUserByEmail(string $email)
     {
         $sql = "SELECT * FROM users WHERE email = ?";
@@ -65,7 +54,7 @@ class UserModel extends BaseModel
     }
 }
 
-// Database connection function remains outside the class
+// Database connection - used by all models
 function getDbConnection(): PDO {
     $db_path = __DIR__ . '/../database/petwatch.sqlite';
     try {

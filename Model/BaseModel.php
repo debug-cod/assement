@@ -1,36 +1,31 @@
 <?php
 require_once '../Model/ModelLoader.php';
 /**
- * Abstract BaseModel class
- * Provides common database functionality for all models
- * This demonstrates inheritance and polymorphism in OOP
+  Base model class that other models extend from
+  Handles common database stuff like get by ID, delete, count, etc.
+  This is the parent class for all models
  */
 abstract class BaseModel
 {
     protected $db;
     protected $tableName;
 
-    /**
-     * Constructor - accepts PDO database connection
-     * @param PDO $db Database connection object
-     */
+    //Constructor - needs a database connection to work
+
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    /**
-     * Get the table name for this model
-     * @return string Table name
-     */
+
+    // Each model must tell which table it uses
+
     abstract protected function getTableName(): string;
 
     /**
-     * Common method to execute prepared statement
-     * @param string $sql SQL query with placeholders
-     * @param array $params Parameters for the query
-     * @return PDOStatement|false Executed statement
-     */
+      Common way to run SQL queries safely
+      Handles errors so the app doesn't crash
+    */
     protected function executeStatement(string $sql, array $params = [])
     {
         try {
@@ -44,9 +39,7 @@ abstract class BaseModel
     }
 
     /**
-     * Get record by ID - common CRUD operation
-     * @param int $id Record ID
-     * @return array|false Record data or false if not found
+     Get a single record by its ID
      */
     public function getById(int $id)
     {
@@ -55,10 +48,9 @@ abstract class BaseModel
         return $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
     }
 
-    /**
-     * Count all records in table
-     * @return int Number of records
-     */
+
+      //Count how many records are in the table
+
     public function countAll(): int
     {
         $sql = "SELECT COUNT(*) as total FROM " . $this->getTableName();
@@ -67,11 +59,9 @@ abstract class BaseModel
         return (int)$result['total'];
     }
 
-    /**
-     * Delete record by ID
-     * @param int $id Record ID
-     * @return bool Success status
-     */
+
+     // Delete a record by ID - returns true if deleted successfully
+
     public function delete(int $id): bool
     {
         $sql = "DELETE FROM " . $this->getTableName() . " WHERE id = ?";
@@ -80,10 +70,8 @@ abstract class BaseModel
     }
 
     /**
-     * Common method for building search conditions
-     * @param array $searchFields Fields to search in
-     * @param string $searchTerm Search term
-     * @return array [sql_condition, parameters]
+      Build search conditions for multiple fields
+      Used for search functionality
      */
     protected function buildSearchCondition(array $searchFields, string $searchTerm): array
     {

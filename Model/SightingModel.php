@@ -4,34 +4,30 @@
 require_once '../Model/ModelLoader.php';
 
 /**
- * SightingModel class - Handles all sighting-related database operations
- * Extends PetRelatedModel to inherit pet-specific functionality
- * This demonstrates how different entities can share common behavior through inheritance
+  SightingModel - handles pet sighting reports
+  Used when people report seeing lost pets
  */
 class SightingModel extends PetRelatedModel
 {
-    /**
-     * Get the table name for this model
-     * @return string Table name
-     */
+
+    //  Tell which table this model uses
+
     protected function getTableName(): string
     {
         return 'sightings';
     }
 
-    /**
-     * Get searchable fields for sighting model
-     * @return array List of searchable field names
-     */
+
+    //  Which fields can be searched
+
     protected function getSearchableFields(): array
     {
         return ['comment', 'latitude', 'longitude', 'timestamp'];
     }
 
     /**
-     * Get all lost pets for reporting sightings
-     * This method demonstrates specialized functionality in child class
-     * @return array Array of lost pets with reward information
+      Get all lost pets for reporting sightings
+      Used on the "report sighting" page
      */
     public function getLostPets()
     {
@@ -46,18 +42,9 @@ class SightingModel extends PetRelatedModel
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    /**
-     * Add a new sighting record
-     * Demonstrates parameter validation and database insertion
-     * @param int $pet_id ID of the pet
-     * @param int $user_id ID of the user reporting
-     * @param string $comment Description of the sighting
-     * @param float $latitude Geographic latitude
-     * @param float $longitude Geographic longitude
-     * @param string $timestamp When the sighting occurred
-     * @param float $reward Optional reward amount
-     * @return bool Success status of the operation
-     */
+
+    //  Add a new sighting report
+
     public function addSighting($pet_id, $user_id, $comment, $latitude, $longitude, $timestamp, $reward = 0)
     {
         $sql = "INSERT INTO sightings (pet_id, user_id, comment, latitude, longitude, timestamp, reward)
@@ -69,11 +56,8 @@ class SightingModel extends PetRelatedModel
     }
 
     /**
-     * Get sightings by specific user with optional search
-     * Demonstrates method overriding with additional parameters
-     * @param int $user_id ID of the user
-     * @param string $search Optional search term
-     * @return array Array of sightings with pet information
+      Get sightings by specific user
+      Used on user profile page
      */
     public function getSightingsByUser($user_id, $search = '')
     {
@@ -84,7 +68,7 @@ class SightingModel extends PetRelatedModel
 
         $params = [$user_id];
 
-        // Add search condition if provided
+        // Add search if provided
         if (!empty($search)) {
             $searchFields = ['p.name', 'p.description', 's.comment', 's.latitude', 's.longitude', 's.timestamp'];
             $searchCondition = $this->buildSearchCondition($searchFields, $search);
@@ -98,13 +82,9 @@ class SightingModel extends PetRelatedModel
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    /**
-     * Delete a sighting by ID with user verification
-     * Demonstrates security through user ownership check
-     * @param int $sighting_id ID of the sighting to delete
-     * @param int $user_id ID of the user (for verification)
-     * @return bool Success status of deletion
-     */
+
+    //  Delete a sighting - only if user owns it
+
     public function deleteSighting($sighting_id, $user_id)
     {
         $sql = "DELETE FROM sightings WHERE id = ? AND user_id = ?";
@@ -112,12 +92,9 @@ class SightingModel extends PetRelatedModel
         return $stmt && $stmt->rowCount() > 0;
     }
 
-    /**
-     * Get recent sightings for dashboard display
-     * Demonstrates additional specialized methods in child class
-     * @param int $limit Number of recent sightings to return
-     * @return array Array of recent sightings
-     */
+
+    //  Get recent sightings for dashboard
+
     public function getRecentSightings($limit = 5)
     {
         $sql = "SELECT s.*, p.name as pet_name, u.username as reporter

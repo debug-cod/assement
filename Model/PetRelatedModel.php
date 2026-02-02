@@ -1,19 +1,16 @@
 <?php
 require_once '../Model/ModelLoader.php';
 /**
- * Abstract PetRelatedModel class
- * Provides common functionality for models that work with pet data
- * This demonstrates intermediate level inheritance
+  Abstract PetRelatedModel class
+  Used for models that work with pet data
+  Has common pagination and search functions
  */
 
 abstract class PetRelatedModel extends BaseModel
 {
     /**
-     * Common method to get records with pagination
-     * @param int $page Page number
-     * @param int $perPage Items per page
-     * @param string $search Search term
-     * @return array Paginated results
+      Get records with pagination and search
+      Used for showing data in pages
      */
     public function getWithPagination(int $page = 1, int $perPage = 10, string $search = ''): array
     {
@@ -21,7 +18,7 @@ abstract class PetRelatedModel extends BaseModel
         $sql = "SELECT * FROM " . $this->getTableName();
         $params = [];
 
-        // Add search condition if provided
+        // Add search if needed
         if (!empty($search)) {
             $searchCondition = $this->buildSearchCondition($this->getSearchableFields(), $search);
             $sql .= " WHERE 1=1" . $searchCondition[0];
@@ -37,19 +34,14 @@ abstract class PetRelatedModel extends BaseModel
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    /**
-     * Get searchable fields for this model
-     * Child classes must implement this
-     * @return array List of searchable field names
-     */
+
+    //  Child classes must say which fields can be searched
+
     abstract protected function getSearchableFields(): array;
 
-    /**
-     * Common method to calculate total pages
-     * @param string $search Search term
-     * @param int $perPage Items per page
-     * @return int Total number of pages
-     */
+
+    //  Calculate total pages for pagination
+
     public function getTotalPages(string $search = '', int $perPage = 10): int
     {
         $sql = "SELECT COUNT(*) as total FROM " . $this->getTableName();
