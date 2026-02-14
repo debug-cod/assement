@@ -195,3 +195,19 @@ body {
 
     /* ... Keep other existing styles unchanged ... */
 }
+
+/* extra new css for search bar to flow on top */
+
+#searchSuggestions {
+    position: absolute;
+    z-index: 1000;      /* 确保它在最前面 */
+    width: 90%;         /* 和输入框差不多宽 */
+    background: white;  /* 背景白色 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 加一点阴影更有质感 */
+}
+
+/* 列表项的鼠标悬停效果 */
+.list-group-item:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
