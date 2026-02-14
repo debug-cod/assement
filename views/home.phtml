@@ -1,5 +1,7 @@
 <?php include 'views/template/header.phtml'; ?>
 
+
+
     <!-- Main content section -->
     <div class="jumbotron text-center">
         <h1>Welcome to petWatch</h1>
@@ -26,6 +28,16 @@
         </div>
     </div>
 
+    <!-- new js map function for sec assigment-->
+
+    <div class="well" style="position: relative;">
+        <input type="text" id="search-input" class="form-control" placeholder="enter pet name">
+        <div id="results"></div>
+    </div>
+
+    <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+
+
     <!-- Feature icons section -->
     <div class="row text-center">
         <div class="col-xs-12 col-sm-4">
@@ -44,5 +56,14 @@
             <p>Help others find their pets</p>
         </div>
     </div>
+
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="js/MapManager.js"></script>
+    <script src="js/SearchManager.js"></script>
+    <script src="js/main.js"></script>
 
 <?php include 'views/template/footer.phtml'; ?>

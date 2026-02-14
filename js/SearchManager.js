@@ -6,16 +6,23 @@ class SearchManager {
     constructor(inputId, resultsId) {
         this.input = document.getElementById(inputId);
         this.resultsContainer = document.getElementById(resultsId);
+        this.debounceTimer = null; // 新增：计时器
     }
 
     init() {
-        // 监听输入框打字事件 (Listen for typing)
         this.input.addEventListener('input', () => {
             const term = this.input.value;
-            if (term.length > 2) { // 输满3个字符才开始搜，节省资源
-                this.performSearch(term);
+
+            // 清除之前的计时器
+            clearTimeout(this.debounceTimer);
+
+            if (term.length > 2) {
+                // 设置 300ms 延迟，如果用户还在打字，之前的请求会被取消
+                this.debounceTimer = setTimeout(() => {
+                    this.performSearch(term);
+                }, 300);
             } else {
-                this.resultsContainer.innerHTML = ''; // 字太少就清空建议
+                this.resultsContainer.innerHTML = '';
             }
         });
     }
