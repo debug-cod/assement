@@ -15,11 +15,17 @@ class MapManager {
     init() {
         // 1. 创建地图对象，默认先定位到曼彻斯特 (Create map, default to Manchester)
         // [53.4808, -2.2426] 是坐标，13 是缩放等级
-        this.map = L.map(this.containerId).setView([53.4808, -2.2426], 13);
+        this.map = L.map(this.containerId, {
+            zoomControl: false // 禁用默认的左上角缩放按钮
+        }).setView([53.4808, -2.2426], 13);
 
         // 2. 加载 OpenStreetMap 的“瓦片”图层 (Load the map graphics/tiles)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
+        }).addTo(this.map);
+
+        L.control.zoom({
+            position: 'bottomright'
         }).addTo(this.map);
 
         console.log("Map is ready! 地图准备好了！");
