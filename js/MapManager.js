@@ -1,25 +1,23 @@
 /**
  * MapManager Class - 负责管理所有的地图操作
- * This class handles all map-related activities.
  */
 class MapManager {
     constructor(containerId) {
-        // 保存地图容器的 ID (save the div id)
         this.containerId = containerId;
         this.map = null;
+        // 【新增】用于存储用户的真实位置，初始为 null
+        this.userLocation = null;
     }
 
     /**
-     * 初始化地图 (Start the map)
+     * 初始化地图
      */
     init() {
-        // 1. 创建地图对象，默认先定位到曼彻斯特 (Create map, default to Manchester)
-        // [53.4808, -2.2426] 是坐标，13 是缩放等级
+        // 默认定位到曼彻斯特
         this.map = L.map(this.containerId, {
-            zoomControl: false // 禁用默认的左上角缩放按钮
+            zoomControl: false
         }).setView([53.4808, -2.2426], 13);
 
-        // 2. 加载 OpenStreetMap 的“瓦片”图层 (Load the map graphics/tiles)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(this.map);
@@ -28,40 +26,46 @@ class MapManager {
             position: 'bottomright'
         }).addTo(this.map);
 
-        console.log("Map is ready! 地图准备好了！");
+        console.log("Map initialized.");
 
-        // 3. 立即尝试定位用户 (Try to find the user right away)
+        // 启动定位
         this.locateUser();
     }
 
     /**
-     * 获取用户的地理定位 (Find where the user is)
+     * 获取用户的地理定位
      */
     locateUser() {
-        // 检查浏览器支不支持定位 (Check if browser supports geolocation)
         if (!navigator.geolocation) {
-            alert("Your browser does not support location. 你的浏览器不支持定位。");
+            console.log("Geolocation is not supported by this browser.");
             return;
         }
 
-        // 浏览器开始找人 (Browser starts searching)
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
 
-                // 把地图移动到用户所在的位置 (Move map to user's location)
+                // 【关键修改】将坐标存入实例变量，供计算距离使用
+                this.userLocation = L.latLng(lat, lng);
+
+                // 把地图移动到用户位置
                 this.map.setView([lat, lng], 15);
 
-                // 在用户位置打个红点 (Add a marker at user's spot)
-                L.marker([lat, lng]).addTo(this.map)
-                    .bindPopup("You are here! 你在这里！")
-                    .openPopup();
+                // 添加用户位置标记（蓝色小点）
+                L.circleMarker([lat, lng], {
+                    color: '#3388ff',
+                    fillColor: '#3388ff',
+                    fillOpacity: 0.5,
+                    radius: 10
+                }).addTo(this.map).bindPopup("You are here").openPopup();
+
+                console.log("User location fixed:", lat, lng);
             },
             (error) => {
-                console.warn("Location access denied. 用户拒绝了定位请求。");
-            }
+                console.warn("Location access denied or timed out.");
+            },
+            { enableHighAccuracy: true } // 开启高精度模式
         );
     }
 }
-
