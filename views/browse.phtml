@@ -333,6 +333,9 @@
     </div>
 
     <script src="../js/MapManager.js"></script>
+    <script src="../js/SearchManager.js"></script>
+
+
 
     <script>
         // JavaScript for mobile experience
@@ -369,19 +372,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. 启动地图经理 (Start Map)
+            // 只初始化一套！
             const myMap = new MapManager('map');
             myMap.init();
 
-            // 2. 启动搜索经理 (Start Search)
-            // 假设你的输入框 ID 是 'searchInput'，下拉列表容器 ID 是 'searchSuggestions'
             const mySearch = new SearchManager('searchInput', 'searchSuggestions');
-            mySearch.init();
+            window.searchManagerInstance = mySearch;
 
-            // 💡 进阶学习：
-            // 未来我们可以做到：当用户点击搜索建议里的某个宠物时，
-            // 让 mySearch 告诉 myMap：“喂，把地图中心移到这只宠物的发现地！”
-            // 这种类与类之间的通信，就是高分项。
+            mySearch.onResultSelected = (lat, lng, name, photo) => {
+                myMap.map.setView([lat, lng], 16);
+                L.marker([lat, lng]).addTo(myMap.map).bindPopup(name).openPopup();
+            };
+            mySearch.init();
         });
 
     </script>
