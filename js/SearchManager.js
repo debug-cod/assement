@@ -33,11 +33,10 @@ class SearchManager {
 
     async performSearch(term) {
         try {
-            // 使用 fetch 请求我们刚写的 PHP 接口
-            // Use fetch to call our new PHP API
-            // 注意路径，如果在 home.phtml 调用，路径应该是 controllers/api_search_pets.php
-            const response = await fetch(`controllers/api_search_pets.php?term=${encodeURIComponent(term)}`);
+            const prefix = window.location.pathname.includes('views') ? '../' : '';
+            const response = await fetch(`${prefix}controllers/api_search_pets.php?term=${encodeURIComponent(term)}`);
             const data = await response.json();
+            this.renderResults(data);
 
             // 把数据画出来 (Render the suggestions)
             this.renderResults(data);
