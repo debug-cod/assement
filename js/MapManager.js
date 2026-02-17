@@ -18,6 +18,8 @@ class MapManager {
     }
 
     locateUser() {
+        if (!navigator.geolocation)
+            return;
         if (!navigator.geolocation) {
             console.log("Geolocation is not supported by this browser.");
             return;
@@ -78,51 +80,44 @@ class MapManager {
 
     async fetchNearbyPets(lat, lng) {
         try {
-            const isViewsFolder = window.location.pathname.includes('views');
-            const prefix = isViewsFolder ? '../' : '';
-            const apiUrl = `${prefix}controllers/api_nearby_pets.php`;
-            const browsePath = isViewsFolder ? 'browse.php' : 'controllers/browse.php';
+            // --- 核心修复：智能路径探测 ---
+            const path = window.location.pathname;
+            // 如果路径包含 browse.php 或 controllers，说明已经在子目录了
+            const isSubFolder = path.includes('browse.php') || path.includes('controllers/');
+
+            const apiUrl = isSubFolder ? 'api_nearby_pets.php' : 'controllers/api_nearby_pets.php';
+            const prefix = isSubFolder ? '../' : '';
+            const browsePath = isSubFolder ? 'browse.php' : 'controllers/browse.php';
+
+            console.log("Detected Environment. API Path:", apiUrl);
+            // ------------------------------
 
             const response = await fetch(`${apiUrl}?lat=${lat}&lng=${lng}&radius=50`);
             const data = await response.json();
 
-            // 【关键修复点】检查返回的是否为数组
-            if (!Array.isArray(data)) {
-                console.error("API并没有返回宠物列表:", data.error || data);
-                return;
-            }
+            if (!Array.isArray(data)) return;
 
-            // 限制只显示前 5 个 (满足你“显示五个”的要求)
-            const topFivePets = data.slice(0, 5);
-
-            topFivePets.forEach(pet => {
+            data.slice(0, 5).forEach(pet => {
+                // 图片路径也需要根据环境加 ../
                 const imgPath = `${prefix}images/pet-image/${pet.photo_url}`;
 
-                L.circleMarker([pet.latitude, pet.longitude], {
-                    color: 'green',
-                    radius: 8
-                })
+                L.circleMarker([pet.latitude, pet.longitude], { color: 'green', radius: 8 })
                     .addTo(this.map)
                     .bindPopup(`
-                    <div style="text-align:center; width:150px; font-family: Arial, sans-serif;">
-                        <img src="${imgPath}" style="width:100%; max-height:100px; object-fit:cover; border-radius:5px; margin-bottom:8px;">
-                        <b style="font-size: 16px; display:block;">${pet.name}</b>
-                        
-                        <div style="font-size: 15px; margin: 8px 0;">
-                            Distance: <b style="color: #2c3e50;">${parseFloat(pet.distance).toFixed(2)} km</b>
-                        </div>
-
-                        <a href="${browsePath}?search=${encodeURIComponent(pet.name)}" 
-                           class="btn btn-primary btn-xs" 
-                           style="color:white; text-decoration:none; display:block; padding: 4px; background-color: #3498db; border-radius:3px;">
-                           Check in Detail
-                        </a>
+                <div style="text-align:center; width:150px;">
+                    <img src="${imgPath}" style="width:100%; border-radius:5px; margin-bottom:5px;">
+                    <b style="font-size:16px;">${pet.name}</b><br>
+                    <div style="font-size:15px; margin:5px 0;">
+                        Distance: <b>${parseFloat(pet.distance).toFixed(2)} km</b>
                     </div>
-                `);
+                    <a href="${browsePath}?search=${encodeURIComponent(pet.name)}" 
+                       class="btn btn-primary btn-xs" style="color:white; display:block;">
+                       Check in Detail
+                    </a>
+                </div>
+            `);
             });
-        } catch (e) {
-            console.error("Nearby load failed:", e);
-        }
+        } catch (e) { console.error("Nearby Pets Error:", e); }
     }
 }
 

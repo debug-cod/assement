@@ -233,3 +233,51 @@ body {
     display: block;
     margin-bottom: 5px;
 }
+
+/* 搜索加载动画 */
+/* 加载动画的小圆圈样式 */
+.loader-spinner {
+    position: absolute;
+    right: 30px;    /* 距离 well 右侧的距离 */
+    top: 28px;      /* 根据 well 的 padding 调整，使其垂直居中于 input */
+    display: none;  /* 初始隐藏 */
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db; /* 蓝色旋转边框 */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    z-index: 5;     /* 确保在 input 之上 */
+}
+
+/* 旋转动画定义 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 优化：防止搜索结果遮挡 loader */
+#results {
+    position: absolute;
+    width: 95%;     /* 略小于 well 宽度，美观一点 */
+    z-index: 1000;
+}
+
+/* 优化：防止搜索结果遮挡 loader */
+/* 1. 让搜索框在电脑端更宽一点 */
+@media (min-width: 992px) {
+    .search-well .form-group.col-md-6 {
+        width: 70% !important; /* 电脑端从 50% 扩大到 70% */
+    }
+}
+
+/* 2. 地图展开后的样式类 */
+.map-expanded {
+    height: 70vh !important; /* 占据屏幕高度的 70% */
+    width: 70vh !important;
+}
+
+/* 让地图容器有平滑过渡效果 */
+#map {
+    transition: height 0.4s ease-in-out;
+}

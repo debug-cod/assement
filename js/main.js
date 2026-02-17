@@ -2,6 +2,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const myMap = new MapManager('map');
     myMap.init();
 
+    window.myMapInstance = myMap;
+
+    const toggleBtn = document.getElementById('toggleMapBtn');
+    const mapContainer = document.getElementById('map');
+
+    if (toggleBtn && mapContainer) {
+        toggleBtn.addEventListener('click', function() {
+            // 1. 切换类名
+            mapContainer.classList.toggle('map-expanded');
+
+            // 2. 更新按钮文字和图标
+            const isExpanded = mapContainer.classList.contains('map-expanded');
+            if (isExpanded) {
+                toggleBtn.innerHTML = '<span class="glyphicon glyphicon-resize-small"></span> Collapse Map';
+                toggleBtn.className = 'btn btn-warning btn-sm';
+            } else {
+                toggleBtn.innerHTML = '<span class="glyphicon glyphicon-resize-full"></span> Expand Map';
+                toggleBtn.className = 'btn btn-default btn-sm';
+            }
+
+            // 3. 【高分关键】延迟一丁点时间等 CSS 动画执行完，然后刷新地图尺寸
+            setTimeout(() => {
+                myMap.map.invalidateSize({ pan: true });
+            }, 450);
+        });
+    }
+
     // 自动适配 ID: home 用 search-input, browse 用 searchInput
     const inputId = document.getElementById('searchInput') ? 'searchInput' : 'search-input';
     const resultsId = document.getElementById('searchSuggestions') ? 'searchSuggestions' : 'results';
@@ -10,11 +37,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.searchManagerInstance = mySearch;
 
     mySearch.onResultSelected = (lat, lng, name, photo) => {
-        myMap.map.setView([lat, lng], 16);
+        const path = window.location.pathname;
+        const isAlreadyInControllers = path.includes('browse.php') || path.includes('controllers/');
 
-        const isViewsFolder = window.location.pathname.includes('views');
-        const prefix = isViewsFolder ? '../' : '';
-        const browsePath = isViewsFolder ? 'browse.php' : 'controllers/browse.php';
+        // 动态适配图片路径和跳转链接
+        const prefix = isAlreadyInControllers ? '../' : '';
+        const browsePath = isAlreadyInControllers ? 'browse.php' : 'controllers/browse.php';
+
+        // 如果在 controllers 里，图片需要跳出去找 ../images/
+        const imgFullPath = `${prefix}images/pet-image/${photo}`;
 
         // 计算当前位置到目标的距离
         let distanceHTML = "";
