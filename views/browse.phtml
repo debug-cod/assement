@@ -346,10 +346,13 @@
     <script src="../js/main.js"></script>
 
     <script>
-        // 只需要保留页面特有的小逻辑（比如 logout 确认），不要再写 MapManager.init()
+        // logout confirmation
         function confirmLogout() {
             return confirm("Are you sure you want to logout?");
         }
+        window.isUserLoggedIn = <?php echo (isset($_SESSION['loggedin'])
+                && $_SESSION['loggedin'] === true)
+                ? 'true' : 'false'; ?>;
     </script>
 
 

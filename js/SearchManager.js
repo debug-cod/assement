@@ -1,16 +1,22 @@
 /**
- * SearchManager Class - 处理实时搜索建议
- * Handles live search suggestions using fetch()
+ * Handles live search suggestions with debouncing and dynamic result injection.
  */
 
 class SearchManager {
+    /**
+     * @param {string} inputId - ID of the search input field.
+     * @param {string} resultsId - ID of the container where suggestions will be rendered.
+     */
     constructor(inputId, resultsId) {
         this.input = document.getElementById(inputId);
         this.resultsContainer = document.getElementById(resultsId);
         this.debounceTimer = null;
-        // 新增：用于存储选中后的回调函数
         this.onResultSelected = null;
     }
+
+
+      //Binds input events and handles search clearing logic.
+
 
     init() {
         if (!this.input) return;
@@ -25,13 +31,12 @@ class SearchManager {
                     this.performSearch(term);
                 }, 300);
             } else {
-                // --- 核心修复：当输入框内容太少或被清空时 ---
                 this.resultsContainer.innerHTML = '';
 
-                // 如果用户完全清空了搜索框，通知地图重置
+                // if user clean the search bar, users current location and nearby pet gonna reappear
                 if (term.length === 0) {
                     console.log("Search cleared, resetting to nearby pets...");
-                    // 触发一个自定义回调，或者直接调用全局地图实例
+                    // Trigger a custom callback, or directly call the global map instance.
                     if (window.myMapInstance) {
                         window.myMapInstance.locateUser();
                     }
@@ -39,6 +44,12 @@ class SearchManager {
             }
         });
     }
+
+    /**
+     * Performs an asynchronous API call to search for pets by name/species/breed.
+     * @param {string} term - The search keyword entered by the user.
+     * @returns {Promise<void>}
+     */
 
     async performSearch(term) {
 
@@ -58,9 +69,11 @@ class SearchManager {
             console.error("Search API Error:", e);
         }
     }
-
+    /**
+     * Renders pet data into a Bootstrap list-group with relative path handling.
+     * @param {Array<Object>} data - Array of pet objects returned from the API.
+     */
     renderResults(data) {
-        // 【关键修复点 2】：确保这里接收参数 data
         if (!data || data.length === 0) {
             this.resultsContainer.innerHTML = '<ul class="list-group"><li class="list-group-item">No pets found</li></ul>';
             return;
@@ -68,7 +81,6 @@ class SearchManager {
 
         const path = window.location.pathname;
         const isSubFolder = path.includes('browse.php') || path.includes('controllers/');
-        // 【关键修复点 3】：修正图片路径，确保 browse 页面能跳出子目录
         const imgPrefix = isSubFolder ? '../' : '';
 
         let html = '<ul class="list-group" style="position:absolute; z-index:1000; width:100%;">';
@@ -81,9 +93,10 @@ class SearchManager {
             const age = pet.age || 'Unknown';
             const breed = pet.breed || 'Unknown';
 
+
             html += `
                 <li class="list-group-item" style="cursor:pointer;" 
-                    onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude || 0}, ${pet.longitude || 0}, '${pet.photo_url}')">
+                    onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude || 0}, ${pet.longitude || 0}, '${pet.photo_url}', ${pet.id})">
                     <div class="row">
                         <div class="col-xs-3">
                             <img src="${imgPrefix}images/pet-image/${pet.photo_url}" class="img-responsive img-rounded">
@@ -108,20 +121,27 @@ class SearchManager {
         this.resultsContainer.innerHTML = html;
     }
 
-    // 处理点击建议项的方法
-    handleItemClick(name, lat, lng, photo) {
+    /**
+     * Handles selection of a suggestion item, moving the map or alerting the user.
+     * @param {string} name - Pet name.
+     * @param {number} lat - Sighting latitude.
+     * @param {number} lng - Sighting longitude.
+     * @param {string} photo - Filename of the pet's photo.
+     */
+
+    // this is for if the pet hasn't got any sighting is will pop this message to alert user no location available for 0 sighting pet
+    handleItemClick(name, lat, lng, photo, petId) {
         if (!lat || !lng || lat == 0) {
-            alert(`Sorry, "${name}" hasn't been sighted yet, so there's no location to show on the map.`);
+            alert(`Sorry, "${name}" hasn't been sighted yet...`);
             this.resultsContainer.innerHTML = '';
             return;
         }
 
-        console.log("Moving map to sighted location:", lat, lng);
         this.resultsContainer.innerHTML = '';
         this.input.value = name;
 
         if (this.onResultSelected) {
-            this.onResultSelected(lat, lng, name, photo);
+            this.onResultSelected(lat, lng, name, photo, petId);
         }
     }
 }

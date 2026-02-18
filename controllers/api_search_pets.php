@@ -5,11 +5,11 @@ header('Content-Type: application/json');
 
 try {
     $db = getDbConnection();
-    // 确保先拿参数
+    // attempt capture first
     $term = isset($_GET['term']) ? trim($_GET['term']) : '';
 
     if (strlen($term) > 2) {
-        // 使用 JOIN 确保拿到坐标
+        // use JSON to get location
         $sql = "SELECT p.*, s.latitude, s.longitude 
                 FROM pets p 
                 LEFT JOIN sightings s ON p.id = s.pet_id 

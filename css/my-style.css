@@ -200,29 +200,29 @@ body {
 
 #searchSuggestions {
     position: absolute;
-    z-index: 1000;      /* 确保它在最前面 */
-    width: 90%;         /* 和输入框差不多宽 */
-    background: white;  /* 背景白色 */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 加一点阴影更有质感 */
+    z-index: 1000;
+    width: 90%;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* 列表项的鼠标悬停效果 */
+/* mouse hover effect */
 .list-group-item:hover {
     background-color: #f5f5f5;
     cursor: pointer;
 }
 
-/* 1. 搜索建议列表的字体 */
+/* suggestion pet name bigger */
 #results .list-group-item strong {
-    font-size: 18px; /* 宠物名字大一点 */
+    font-size: 18px; /* larger pet name */
     color: #333;
 }
 
 #results .list-group-item {
-    font-size: 14px; /* 其他信息大小 */
+    font-size: 14px;
 }
 
-/* 2. 地图气泡（Popup）里的字体 */
+/* 2. the font in pop up */
 .leaflet-popup-content {
     font-size: 16px;
     line-height: 1.5;
@@ -234,50 +234,50 @@ body {
     margin-bottom: 5px;
 }
 
-/* 搜索加载动画 */
-/* 加载动画的小圆圈样式 */
+/* search anime effect */
+/* spinning anime */
 .loader-spinner {
     position: absolute;
-    right: 30px;    /* 距离 well 右侧的距离 */
-    top: 28px;      /* 根据 well 的 padding 调整，使其垂直居中于 input */
-    display: none;  /* 初始隐藏 */
+    right: 30px;    /
+    top: 28px;
+    display: none;
     border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db; /* 蓝色旋转边框 */
+    border-top: 3px solid #3498db;
     border-radius: 50%;
     width: 20px;
     height: 20px;
     animation: spin 1s linear infinite;
-    z-index: 5;     /* 确保在 input 之上 */
+    z-index: 5;
 }
 
-/* 旋转动画定义 */
+/* custom rotate */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-/* 优化：防止搜索结果遮挡 loader */
+
 #results {
     position: absolute;
-    width: 95%;     /* 略小于 well 宽度，美观一点 */
+    width: 95%;
     z-index: 1000;
 }
 
-/* 优化：防止搜索结果遮挡 loader */
-/* 1. 让搜索框在电脑端更宽一点 */
+
+/* make search bar wider */
 @media (min-width: 992px) {
     .search-well .form-group.col-md-6 {
         width: 70% !important; /* 电脑端从 50% 扩大到 70% */
     }
 }
 
-/* 2. 地图展开后的样式类 */
+/* how is look like when map expand */
 .map-expanded {
-    height: 70vh !important; /* 占据屏幕高度的 70% */
+    height: 70vh !important; /* around 70% of the screen */
     width: 70vh !important;
 }
 
-/* 让地图容器有平滑过渡效果 */
+/* make map have transistion affect */
 #map {
     transition: height 0.4s ease-in-out;
 }

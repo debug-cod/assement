@@ -69,5 +69,10 @@
     <script src="js/SearchManager.js"></script>
 
     <script src="js/main.js"></script>
+    <script>
+        window.isUserLoggedIn =
+        <?php echo (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true)
+                ? 'true' : 'false'; ?>;
+    </script>
 
 <?php include 'views/template/footer.phtml'; ?>
