@@ -61,7 +61,7 @@ class MapManager {
                 // if user denied use this logic so call user denied logic apply
                 this.handleLocationError();
                 {
-                    // 设置一个默认坐标（例如曼彻斯特坐标）
+                    // set defualt location as manchester
                     const defaultLat = 53.4808;
                     const defaultLng = -2.2426;
 
@@ -95,7 +95,6 @@ class MapManager {
      */
     async fetchNearbyPets(lat, lng) {
         try {
-            // --- 核心修复：定义所有路径变量 ---
             const path = window.location.pathname;
             const isSubFolder = path.includes('browse.php') || path.includes('controllers/');
             const apiUrl = isSubFolder ? 'api_nearby_pets.php' : 'controllers/api_nearby_pets.php';
@@ -168,7 +167,7 @@ class MapManager {
     }
 
     async submitSighting(petId) {
-        // 检查 petId 是否有效
+        // Safety check for valid petId
         if (!petId || petId === 'null' || petId === 'undefined') {
             console.error("Critical Error: petId is invalid!", petId);
             alert("Error: Cannot identify this pet. Please re-search and try again.");
@@ -186,7 +185,7 @@ class MapManager {
             alert("Please enter a description!");
             return;
         }
-
+        // Determine API path based on current URL depth
         try {
             const apiUrl = window.location.pathname.includes('controllers/')
                 ? 'api_add_sighting.php'
@@ -196,7 +195,7 @@ class MapManager {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    pet_id: Number(petId), // 强制转为数字类型
+                    pet_id: Number(petId), // Ensure ID is sent as a number
                     comment: comment
                 })
             });

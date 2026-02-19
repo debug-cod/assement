@@ -1,6 +1,6 @@
-/**
- * Handles live search suggestions with debouncing and dynamic result injection.
- */
+
+//  Handles live search suggestions with debouncing and dynamic result injection.
+
 
 class SearchManager {
     /**
@@ -11,7 +11,8 @@ class SearchManager {
         this.input = document.getElementById(inputId);
         this.resultsContainer = document.getElementById(resultsId);
         this.debounceTimer = null;
-        this.onResultSelected = null;
+        this.onResultSelected = null; // Callback triggered when a pet is selected
+
     }
 
 
@@ -38,7 +39,7 @@ class SearchManager {
                     console.log("Search cleared, resetting to nearby pets...");
                     // Trigger a custom callback, or directly call the global map instance.
                     if (window.myMapInstance) {
-                        window.myMapInstance.locateUser();
+                        window.myMapInstance.locateUser(); // Reset map if search is cleared
                     }
                 }
             }
@@ -93,8 +94,7 @@ class SearchManager {
             const gender = pet.gender || 'Unknown';
             const age = pet.age || 'Unknown';
             const breed = pet.breed || 'Unknown';
-
-
+            // Pass pet details including ID to the handler
             html += `
     <li onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude}, ${pet.longitude}, '${pet.photo_url}', ${pet.id})" 
         class="list-group-item">
@@ -131,14 +131,15 @@ class SearchManager {
      */
 
     // this is for if the pet hasn't got any sighting is will pop this message to alert user no location available for 0 sighting pet
-    handleItemClick(name, lat, lng, photo, petId) { // 确认这里有 petId
+    handleItemClick(name, lat, lng, photo, petId) {
+        // Validation for pets without GPS coordinates
         if (!lat || !lng || lat == 0) {
             alert(`Sorry, "${name}" hasn't been sighted yet...`);
             this.resultsContainer.innerHTML = '';
             return;
         }
+        // Trigger the callback defined in main.js
         if (this.onResultSelected) {
-            // 2. 确保把 petId 传给 main.js
             this.onResultSelected(lat, lng, name, photo, petId);
         }
 
