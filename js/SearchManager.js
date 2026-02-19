@@ -15,7 +15,7 @@ class SearchManager {
     }
 
 
-      //Binds input events and handles search clearing logic.
+    //Binds input events and handles search clearing logic.
 
 
     init() {
@@ -69,6 +69,7 @@ class SearchManager {
             console.error("Search API Error:", e);
         }
     }
+
     /**
      * Renders pet data into a Bootstrap list-group with relative path handling.
      * @param {Array<Object>} data - Array of pet objects returned from the API.
@@ -95,8 +96,8 @@ class SearchManager {
 
 
             html += `
-                <li class="list-group-item" style="cursor:pointer;" 
-                    onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude || 0}, ${pet.longitude || 0}, '${pet.photo_url}', ${pet.id})">
+    <li onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude}, ${pet.longitude}, '${pet.photo_url}', ${pet.id})" 
+        class="list-group-item">
                     <div class="row">
                         <div class="col-xs-3">
                             <img src="${imgPrefix}images/pet-image/${pet.photo_url}" class="img-responsive img-rounded">
@@ -130,17 +131,23 @@ class SearchManager {
      */
 
     // this is for if the pet hasn't got any sighting is will pop this message to alert user no location available for 0 sighting pet
-    handleItemClick(name, lat, lng, photo, petId) {
+    handleItemClick(name, lat, lng, photo, petId) { // 确认这里有 petId
         if (!lat || !lng || lat == 0) {
             alert(`Sorry, "${name}" hasn't been sighted yet...`);
             this.resultsContainer.innerHTML = '';
             return;
         }
+        if (this.onResultSelected) {
+            // 2. 确保把 petId 传给 main.js
+            this.onResultSelected(lat, lng, name, photo, petId);
+        }
 
+        console.log("Selected Pet ID:", petId); // 调试用
         this.resultsContainer.innerHTML = '';
         this.input.value = name;
 
         if (this.onResultSelected) {
+            // 关键：这里必须把 petId 传给 main.js
             this.onResultSelected(lat, lng, name, photo, petId);
         }
     }

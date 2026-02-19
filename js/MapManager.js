@@ -21,6 +21,7 @@ class MapManager {
         L.control.zoom({position: 'bottomright'}).addTo(this.map);
         this.locateUser();
     }
+
     /**
      * Attempts to get the user's current GPS coordinates.
      * Falls back to a default location (Manchester) if access is denied.
@@ -82,9 +83,10 @@ class MapManager {
                     this.fetchNearbyPets(defaultLat, defaultLng);
                 }
             },
-            { enableHighAccuracy: true }
+            {enableHighAccuracy: true}
         );
     }
+
     /**
      * Fetches up to 5 nearby pets from the server based on coordinates.
      * @param {number} lat - Latitude of the search center.
@@ -132,7 +134,7 @@ class MapManager {
                 }
 
                 // Bind a Popup with a complete UI (using circleMarker)
-                L.circleMarker([pet.latitude, pet.longitude], { color: 'green', radius: 8 })
+                L.circleMarker([pet.latitude, pet.longitude], {color: 'green', radius: 8})
                     .addTo(this.map)
                     .bindPopup(`
                         <div style="text-align:center; width:220px; font-family: Arial, sans-serif;">
@@ -164,37 +166,52 @@ class MapManager {
             console.error("Nearby Pets Error:", e);
         }
     }
-    async submitSighting(petId) {
-        const commentInput = document.getElementById(`comment-${petId}`);
-        const comment = commentInput.value;
 
+    async submitSighting(petId) {
+        // 检查 petId 是否有效
+        if (!petId || petId === 'null' || petId === 'undefined') {
+            console.error("Critical Error: petId is invalid!", petId);
+            alert("Error: Cannot identify this pet. Please re-search and try again.");
+            return;
+        }
+
+        const commentInput = document.getElementById(`comment-${petId}`);
+        if (!commentInput) {
+            alert("System error: Input field not found.");
+            return;
+        }
+
+        const comment = commentInput.value.trim();
         if (!comment) {
             alert("Please enter a description!");
             return;
         }
 
         try {
-            // Automatic path detection: If it's in the controllers directory, it will be called directly; otherwise, add controllers/.
             const apiUrl = window.location.pathname.includes('controllers/')
                 ? 'api_add_sighting.php'
                 : 'controllers/api_add_sighting.php';
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pet_id: petId, comment: comment })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    pet_id: Number(petId), // 强制转为数字类型
+                    comment: comment
+                })
             });
 
             const result = await response.json();
             if (result.success) {
-                alert("Sighting report saved! Thanks for helping.");
+                alert("Sighting report updated!");
                 commentInput.value = '';
                 this.map.closePopup();
             } else {
-                alert("Error: " + result.error);
+                alert("Update failed: " + result.error);
             }
         } catch (e) {
             console.error("Submit Error:", e);
+            alert("Connection error. Check console.");
         }
     }
 }
