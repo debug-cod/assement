@@ -1,6 +1,6 @@
-
-//  Handles live search suggestions with debouncing and dynamic result injection.
-
+/**
+ * Handles live search suggestions with debouncing and dynamic result injection.
+ */
 
 class SearchManager {
     /**
@@ -11,8 +11,7 @@ class SearchManager {
         this.input = document.getElementById(inputId);
         this.resultsContainer = document.getElementById(resultsId);
         this.debounceTimer = null;
-        this.onResultSelected = null; // Callback triggered when a pet is selected
-
+        this.onResultSelected = null;
     }
 
 
@@ -39,7 +38,7 @@ class SearchManager {
                     console.log("Search cleared, resetting to nearby pets...");
                     // Trigger a custom callback, or directly call the global map instance.
                     if (window.myMapInstance) {
-                        window.myMapInstance.locateUser(); // Reset map if search is cleared
+                        window.myMapInstance.locateUser();
                     }
                 }
             }
@@ -63,7 +62,7 @@ class SearchManager {
             const response = await fetch(`${apiUrl}?term=${encodeURIComponent(term)}`);
             const data = await response.json();
 
-            // 【关键修复点 1】：必须把 data 传进去，否则 renderResults 内部找不到数据
+
             this.renderResults(data);
 
         } catch (e) {
@@ -94,10 +93,11 @@ class SearchManager {
             const gender = pet.gender || 'Unknown';
             const age = pet.age || 'Unknown';
             const breed = pet.breed || 'Unknown';
-            // Pass pet details including ID to the handler
+
+
             html += `
     <li onclick="window.searchManagerInstance.handleItemClick('${pet.name}', ${pet.latitude}, ${pet.longitude}, '${pet.photo_url}', ${pet.id})" 
-        class="list-group-item">
+        class="list-group-item" style="cursor:pointer;">
                     <div class="row">
                         <div class="col-xs-3">
                             <img src="${imgPrefix}images/pet-image/${pet.photo_url}" class="img-responsive img-rounded">
@@ -118,7 +118,8 @@ class SearchManager {
                 </li>`;
         });
 
-        html += '</ul>';
+        html +=
+            '</ul>';
         this.resultsContainer.innerHTML = html;
     }
 
@@ -131,24 +132,22 @@ class SearchManager {
      */
 
     // this is for if the pet hasn't got any sighting is will pop this message to alert user no location available for 0 sighting pet
-    handleItemClick(name, lat, lng, photo, petId) {
-        // Validation for pets without GPS coordinates
+    handleItemClick(name, lat, lng, photo, petId) { // 确认这里有 petId
         if (!lat || !lng || lat == 0) {
             alert(`Sorry, "${name}" hasn't been sighted yet...`);
             this.resultsContainer.innerHTML = '';
             return;
         }
-        // Trigger the callback defined in main.js
         if (this.onResultSelected) {
+            // make sure pet id and rest attuibute pass over to main js
             this.onResultSelected(lat, lng, name, photo, petId);
         }
 
-        console.log("Selected Pet ID:", petId); // 调试用
+        console.log("Selected Pet ID:", petId);
         this.resultsContainer.innerHTML = '';
         this.input.value = name;
 
         if (this.onResultSelected) {
-            // 关键：这里必须把 petId 传给 main.js
             this.onResultSelected(lat, lng, name, photo, petId);
         }
     }

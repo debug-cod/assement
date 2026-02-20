@@ -12,9 +12,9 @@ try {
 
     // extract all the information i need from my database
     // we make selection first
-    $sql = "SELECT p.name, p.gender, p.photo_url, s.latitude, s.longitude
-            FROM pets p
-            JOIN sightings s ON p.id = s.pet_id";
+    $sql = "SELECT p.id, p.name, p.gender, p.photo_url, s.latitude, s.longitude 
+        FROM pets p
+        JOIN sightings s ON p.id = s.pet_id";
 
     $stmt = $db->prepare($sql);
     $stmt->execute();

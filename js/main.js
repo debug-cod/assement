@@ -51,17 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. 准备 UI
         let actionHTML = "";
         if (window.isUserLoggedIn && petId) {
-            // 注意：这里我们给 submitSighting 传参时强制确保它是 petId
             actionHTML = `
-            <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
-                <input type="text" id="comment-${petId}" class="form-control input-sm" 
-                       placeholder="Describe where you saw it..." style="margin-bottom:5px;">
-                <button onclick="window.myMapInstance.submitSighting(${petId})" 
-                        class="btn btn-warning btn-sm btn-block" 
-                        style="font-weight:bold;">
-                    Update Sighting Detail
-                </button>
-            </div>`;
+        <div style="margin-top:10px;">
+            <input type="text" id="comment-${petId}" class="form-control" placeholder="Describe what you see">
+            <button onclick="window.myMapInstance.submitSighting(${petId})" 
+                    class="btn btn-warning btn-block">
+                update pet comment
+            </button>
+        </div>`;
         } else if (!window.isUserLoggedIn) {
             actionHTML = `
             <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
