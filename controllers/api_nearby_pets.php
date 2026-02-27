@@ -12,12 +12,15 @@ try {
 
     // extract all the information i need from my database
     // we make selection first
-    $sql = "SELECT p.id, p.name, p.gender, p.photo_url, s.latitude, s.longitude 
+    $sql = "SELECT p.id, p.name, p.gender, p.photo_url, s.latitude, s.longitude,
+        (6371 * acos(cos(radians(:lat)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:lng)) + sin(radians(:lat1)) * sin(radians(s.latitude)))) AS distance
         FROM pets p
-        JOIN sightings s ON p.id = s.pet_id";
+        JOIN sightings s ON p.id = s.pet_id
+        HAVING distance < :radius
+        ORDER BY distance ASC";
 
     $stmt = $db->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(['lat' => $lat, 'lng' => $lng, 'lat1' => $lat, 'radius' => $radius]);
     $allPets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $results = [];

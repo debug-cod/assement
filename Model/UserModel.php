@@ -55,14 +55,23 @@ class UserModel extends BaseModel
 }
 
 // Database connection - used by all models
+// UserModel.php
 function getDbConnection(): PDO {
-    $db_path = __DIR__ . '/../database/petwatch.sqlite';
+    // force to use clound enivorment set up
+    $host = 'localhost';
+    $db   = 'serve'; // the serve database name
+    $user = 'chc742';       // the serve manage name
+    $pass = 'jjgXuN6lViaeHkP'; // the serve marina db unqiue password
+
     try {
-        $db = new PDO("sqlite:$db_path");
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $db;
+        $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+        return new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
     } catch (PDOException $e) {
-        die("Database connection failed: " . $e->getMessage());
+        // if something gose wrong give message feedback
+        error_log("Connection failed: " . $e->getMessage());
+        die("Connection failed: Check username/password/DB name.");
     }
 }
 ?>

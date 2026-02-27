@@ -5,58 +5,40 @@ require_once '../Model/ModelLoader.php';
   PetOwnerModel - handles everything for pet owners
   Add pets, view pets, update pets, delete pets, and see sightings
  */
-class PetOwnerModel
+class PetOwnerModel extends BaseModel
 {
-    private $db;
-
-    // Constructor needs database connection
-    public function __construct(PDO $db)
+    // The parent class's methods must be implemented.
+    protected function getTableName(): string
     {
-        $this->db = $db;
+        return 'pets';
     }
 
-
-     // Add a new pet to the system
-
+    // The modified addPet method (adapted for MariaDB syntax)
     public function addPet($name, $species, $breed, $color, $photo_url, $status, $description, $user_id, $gender, $age, $reward = 0)
     {
-        $stmt = $this->db->prepare("
-            INSERT INTO pets (name, species, breed, color, photo_url, status, description, user_id, gender, age, date_reported)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date('now'))
-        ");
+        // Note: date('now') has been changed to CURDATE()
+        $sql = "INSERT INTO pets (name, species, breed, color, photo_url, status, description, user_id, gender, age, date_reported)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE())";
+
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([$name, $species, $breed, $color, $photo_url, $status, $description, $user_id, $gender, $age]);
     }
 
-    /**
-      Get pets owned by a specific user
-      Used on "my pets" page
-     */
+    // 2. getPetsByOwner
     public function getPetsByOwner($user_id, $search = '', $page = 1, $perPage = 9)
     {
-        $offset = ($page - 1) * $perPage;
-
-        $sql = "
-            SELECT p.*, 
-                   COUNT(s.id) as sighting_count,
-                   COALESCE(SUM(s.reward), 0) as total_reward
-            FROM pets p
-            LEFT JOIN sightings s ON p.id = s.pet_id
-            WHERE p.user_id = ?
-        ";
-
+        $offset = (int)($page - 1) * $perPage;
+        // MariaDB's LIMIT syntax
+        $sql = "SELECT * FROM pets WHERE user_id = ? ";
         $params = [$user_id];
 
-        // Add search if needed
         if (!empty($search)) {
-            $sql .= " AND (p.name LIKE ? OR p.species LIKE ? OR p.breed LIKE ? 
-                     OR p.color LIKE ? OR p.description LIKE ? OR p.status LIKE ?)";
-            $searchTerm = "%$search%";
-            $params = array_merge($params, array_fill(0, 6, $searchTerm));
+            $sql .= " AND (name LIKE ? OR breed LIKE ?) ";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
         }
 
-        $sql .= " GROUP BY p.id ORDER BY p.date_reported DESC LIMIT ? OFFSET ?";
-        $params[] = $perPage;
-        $params[] = $offset;
+        $sql .= " ORDER BY id DESC LIMIT $perPage OFFSET $offset";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
